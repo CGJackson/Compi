@@ -1,5 +1,4 @@
-#define PY_SSIZE_T_CLEAN
-#include <Python.h>
+#include "ComplexValuedNInt.hpp"
 
 #include <complex>
 #include <utility>
