@@ -1,12 +1,7 @@
 #define PY_SSIZE_T_CLEAN
 #include <Python.h>
 
-#include <boost/math/quadrature/gauss_kronrod.hpp>
-
 #include "ComplexValuedNInt.h"
-
-static PyObject * integrate(PyObject *self, PyObject *args){
-}
 
 // Method Table
 static PyMethodDef ComplexValuedNIntMethods[] = {
