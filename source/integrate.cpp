@@ -15,7 +15,7 @@ complex<Real> complex_from_c_complex(const Py_complex& c){
 }
 
 bool convertable_to_py_complex(PyObject* obj){
-    //TODO
+    return PyComplex_Check(obj) || (PyObject_HasAttrString(obj, "__complex__") && PyCallableCheck(PyObject_GetAttrString(obj,"__complex__")));
 }
 
 template<typename Real>
