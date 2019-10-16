@@ -18,47 +18,76 @@ bool convertable_to_py_complex(PyObject* obj){
     return PyComplex_Check(obj) || (PyObject_HasAttrString(obj, "__complex__") && PyCallableCheck(PyObject_GetAttrString(obj,"__complex__")));
 }
 
+PyObject* copy_py_tuple(PyObject* tup){
+    if(!PyTupleCheck(tup)){
+        PyErr_SetString(PyExc_ValueError, "Object passed to copy_py_tuple was not a tuple");
+        return NULL;
+    }
+
+    const Py_ssize_t size = PyTuple_Size(tup)
+
+    PyObject* new_tup = PyTuple_New(size);
+    if(new_tup == NULL){
+        return NULL;
+    }
+
+    for(Py_ssize_t i = 0; i < size; ++i){
+        PyObject* elm = PyTuple_GET_ITEM(tup, i);
+        PyTuple_SET_ITEM(new_tup,i,elm);
+        Py_INCREF(elm);
+    }
+
+    return new_tup;
+}
+
 // Exceptions to be used in IntegrandFunctionWrapper`
 class unable_to_construct_wrapper: public runtime_error{
     using std::runtime_error::runtime_error;
 };
 class function_not_callable: public std::invalid_argument{
     using std::invalid_argument::invalid_argument;
+    function_not_callable(const char* c_message, const char* python_message):invalid_argument(c_message){
+        PyErr_SetString(PyExc_ValueError,python_message);
+    }
 };
 class arg_list_not_tuple: public std::invalid_argument{
     using std::invalid_argument::invalid_argument;
+    arg_list_not_tuple(const char * c_message, const char* python_message): invalid_argument(c_message){
+        PyErr_SetString(PyExc_ValueError,python_message);
+    }
 };
 class function_did_not_return_complex: public std::invalid_argument{
     using std::invalid_argument::invalid_argument;
+    function_did_not_return_complex(const char * c_message, const char* python_message): invalid_argument(c_message){
+        PyErr_SetString(PyExc_ValueError,python_message);
+    }
 };
 
 template<typename Real>
 class IntegrandFunctionWrapper {
     private:
-        PyObject* callback = std::nullptr;
-        PyObject* args = std::nullptr;
-        PyObject* constructArgList(Real x){
-            if( args = std::nullptr){
-               return Py_BuildValue("(d)", x);
-            }
-
+        PyObject* callback;
+        PyObject* args;
         }
     public:
         IntegrandFunctionWrapper(PyObject * func, PyObject * new_args = std::nullptr){
             :callback=func{
-            if( func == std::nullptr){
-                return;
+            if( func == NULL){
+                if(PyErr_Occured() != NULL){
+                    PyErr_SetString(PyExc_TypeError,"No Valid Python Object passed to IntegrandFunctionWrapper"); 
+                }
+                throw unable_to_construct_wrapper("Function passed to IntegrandFunctionWrapper cannot be NULL");
             }
 
             if(!PyCallable_Check(func)){
-                throw function_not_callable("The Python Object for IntegrandFunctionWrapper to wrap was not callable");
+                throw function_not_callable("The Python Object for IntegrandFunctionWrapper to wrap was not callable", "Unable to wrap uncallable object");
             }
             Py_INCREF(func);
 
             if( new_args != std::nullptr ){
                 if(!PyTuple_Check(new_args)){
                     Py_DECREF(func);
-                    throw arg_list_not_tuple("The argument list given to IntegrandFunctionWrapper was not a Python Tuple");
+                    throw arg_list_not_tuple("The argument list given to IntegrandFunctionWrapper was not a Python Tuple", "The extra arguments passed to the function wrapper were not a valid python tuple");
                 }
 
                 const Py_ssize_t extra_arg_count = Py_Tuple_GET_SIZE(new_args);
@@ -91,17 +120,11 @@ class IntegrandFunctionWrapper {
         }
 
         noexcept IntegrandFunctionWrapper(const IntegrandFunctionWrapper& other)
-            :callback=other.callback, args=other.args {
-            if( func != std::nullptr ){
-                Py_INCREF(func);
+            :callback=other.callback, args=copy_py_tuple(other.args) {
+            if(args == NULL){
+                throw unable_to_construct_wrapper("Unable to copy args in IntegrandFunctionWrapper");
             }
-            if( args != std::nullptr ){
-                Py_INCREF(args);
-            }
-        }
-
-        noexcept IntegrandFunctionWrapper(IntegrandFunctionWrapper&& other): IntegrandFunctionWrapper() {
-            swap(*this, other)
+            Py_INCREF(func);
         }
 
         noexcept IntegrandFunctionWrapper& operator=(IntegrandFunctionWrapper other){
@@ -116,12 +139,8 @@ class IntegrandFunctionWrapper {
         }
 
         ~IntegrandFunctionWrapper(){
-            if(func != std::nullptr){
-                Py_DECREF(func);
-            }
-            if(args != std::nullptr){
-                Py_DECREF(args);
-            }
+            Py_DECREF(func);
+            Py_DECREF(args);
         }
 
         complex<Real> operator()(Real x){
@@ -129,15 +148,24 @@ class IntegrandFunctionWrapper {
             // and args as its other arguments and reutrns the result as a
             // std::complex
             
-            if(callback == std::nullptr){
-                throw std::logic_error("Attempted to call integrand function wrapper with no function defined.");
-            }
 
             //TODO set first arg
+            PyObject* py_x = PyFloat_FromDouble(x);
+            if(py_x == NULL){
+                //TODO
+            }
+            if(!PyTuple_SetItem(args,0,py_x)){
+                //TODO
+            }
+            Py_DECREF(Py_None);
             
             PyObject * py_result = PyObject_CallObject(callback, args);
             
-            //TODO unset first arg
+            if(!PyTuple_SetItem(args,0,Py_None)){
+                //TODO
+            }
+            Py_INCREF(Py_None);
+            Py_DECREF(py_x);
 
             if(py_result == NULL){
                 throw PythonError("Error occured in integrand function");
@@ -145,7 +173,8 @@ class IntegrandFunctionWrapper {
             
             if(convertable_to_py_complex(py_result)){
                 Py_DECREF(py_result);
-                throw function_did_not_return_complex("The return value of the integrand function could not be converted to a complex number");
+                throw function_did_not_return_complex("The return value of the integrand function could not be converted to a complex number", 
+                        "The function passed to IntegrandFunctionWrapper did not return a value that culd be converted to complex");
             }
 
             complex<Real> cpp_result = complex_from_c_complex(PyComplex_AsCComplex(py_result);
