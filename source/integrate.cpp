@@ -69,6 +69,7 @@ class IntegrandFunctionWrapper {
         PyObject* callback;
         PyObject* args;
         }
+        
     public:
         IntegrandFunctionWrapper(PyObject * func, PyObject * new_args = std::nullptr){
             :callback=func{
@@ -119,7 +120,7 @@ class IntegrandFunctionWrapper {
             }
         }
 
-        noexcept IntegrandFunctionWrapper(const IntegrandFunctionWrapper& other)
+        IntegrandFunctionWrapper(const IntegrandFunctionWrapper& other)
             :callback=other.callback, args=copy_py_tuple(other.args) {
             if(args == NULL){
                 throw unable_to_construct_wrapper("Unable to copy args in IntegrandFunctionWrapper");
@@ -127,7 +128,14 @@ class IntegrandFunctionWrapper {
             Py_INCREF(func);
         }
 
-        noexcept IntegrandFunctionWrapper& operator=(IntegrandFunctionWrapper other){
+        IntegrandFunctionWrapper(IntegrandFunctionWrapper&& other) = delete;
+
+        IntegrandFunctionWrapper& operator=(IntegrandFunctionWrapper other){
+            swap(*this,other);
+            return *this;
+        }
+
+        IntegrandFunctionWrapper& operator=(IntegrandFunctionWrapper&& other){
             swap(*this,other);
             return *this;
         }
