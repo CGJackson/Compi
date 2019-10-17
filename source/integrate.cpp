@@ -55,22 +55,18 @@ class function_not_callable: public std::invalid_argument{
 };
 class arg_list_not_tuple: public std::invalid_argument{
     using std::invalid_argument::invalid_argument;
-    arg_list_not_tuple(const char * c_message, const char* python_message): invalid_argument(c_message){
+    arg_list_not_tuple(const char * c_message, const char* python_message): std::invalid_argument(c_message){
         PyErr_SetString(PyExc_ValueError,python_message);
     }
 };
 class function_did_not_return_complex: public std::invalid_argument{
     using std::invalid_argument::invalid_argument;
-    function_did_not_return_complex(const char * c_message, const char* python_message): invalid_argument(c_message){
+    function_did_not_return_complex(const char * c_message, const char* python_message): std::invalid_argument(c_message){
         PyErr_SetString(PyExc_ValueError,python_message);
     }
 };
 class unable_to_form_arg_tuple: public std::runtime_error{
     using std::runtime_error::runtime_error;
-    unable_to_form_arg_tuple(const char* c_message, const char* python_message):std::runtime_error{c_message}{
-        PyErr_SetString(PyExc_//TODO
-                ,python_message);
-    }
 };
 
 template<typename Real>
@@ -183,14 +179,14 @@ class IntegrandFunctionWrapper {
                 throw unable_to_construct_py_object("error converting callback arg to Py_Float")
             }
             if(!PyTuple_SetItem(args,0,py_x)){
-                //TODO
+                throw unable_to_form_arg_tuple("unable to add new x to arg list");
             }
             Py_DECREF(Py_None);
             
             PyObject * py_result = PyObject_CallObject(callback, args);
             
             if(!PyTuple_SetItem(args,0,Py_None)){
-                //TODO
+                throw unable_to_form_arg_tuple("unable to remove new x from arg list");
             }
             Py_INCREF(Py_None);
             Py_DECREF(py_x);
