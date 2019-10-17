@@ -41,7 +41,10 @@ PyObject* copy_py_tuple(PyObject* tup){
 }
 
 // Exceptions to be used in IntegrandFunctionWrapper`
-class unable_to_construct_wrapper: public runtime_error{
+class unable_to_construct_wrapper: public std::runtime_error{
+    using std::runtime_error::runtime_error;
+};
+class unable_to_construct_py_object: public std::runtime_error{
     using std::runtime_error::runtime_error;
 };
 class function_not_callable: public std::invalid_argument{
@@ -62,6 +65,13 @@ class function_did_not_return_complex: public std::invalid_argument{
         PyErr_SetString(PyExc_ValueError,python_message);
     }
 };
+class unable_to_form_arg_tuple: public std::runtime_error{
+    using std::runtime_error::runtime_error;
+    unable_to_form_arg_tuple(const char* c_message, const char* python_message):std::runtime_error{c_message}{
+        PyErr_SetString(PyExc_//TODO
+                ,python_message);
+    }
+};
 
 template<typename Real>
 class IntegrandFunctionWrapper {
@@ -71,6 +81,7 @@ class IntegrandFunctionWrapper {
         }
         
     public:
+        IntegrandFunctionWrapper() = delete;
         IntegrandFunctionWrapper(PyObject * func, PyObject * new_args = std::nullptr){
             :callback=func{
             if( func == NULL){
@@ -128,13 +139,23 @@ class IntegrandFunctionWrapper {
             Py_INCREF(func);
         }
 
-        IntegrandFunctionWrapper(IntegrandFunctionWrapper&& other) = delete;
+        //I can't think of a more efficent way to leave the orignial
+        //in a valid state after moving than simply copying
+        IntegrandFunctionWrapper(IntegrandFunctionWrapper&& other)
+            :callback=other.callback, args=copy_py_tuple(other.args) {
+            if(args == NULL){
+                throw unable_to_construct_wrapper("Unable to copy args in IntegrandFunctionWrapper");
+            }
+            Py_INCREF(func);
+        }
 
         IntegrandFunctionWrapper& operator=(IntegrandFunctionWrapper other){
             swap(*this,other);
             return *this;
         }
 
+        // similar to move constructor, the most efficent thing to do here
+        // simply seems to be to swap elements
         IntegrandFunctionWrapper& operator=(IntegrandFunctionWrapper&& other){
             swap(*this,other);
             return *this;
@@ -157,10 +178,9 @@ class IntegrandFunctionWrapper {
             // std::complex
             
 
-            //TODO set first arg
             PyObject* py_x = PyFloat_FromDouble(x);
             if(py_x == NULL){
-                //TODO
+                throw unable_to_construct_py_object("error converting callback arg to Py_Float")
             }
             if(!PyTuple_SetItem(args,0,py_x)){
                 //TODO
