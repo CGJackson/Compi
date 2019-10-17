@@ -209,6 +209,14 @@ class IntegrandFunctionWrapper {
         }
 };
 
-PyObject* integrate_internal(
+extern "C" PyObject* integrate(PyObject* args){
+    //TODO unpack args
+   
+    IntegrandFunctionWrapper f{integrand,args};
 
+    switch(routine){
+
+    }
+
+    return PyBuildValue("(ff)",result,err);
 }
