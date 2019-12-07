@@ -1,7 +1,4 @@
-#define PY_SSIZE_T_CLEAN
-#include <Python.h>
-
-#include "ComplexValuedNInt.h"
+#include "Kumquat.h"
 
 // Method Table
 static PyMethodDef ComplexValuedNIntMethods[] = {
