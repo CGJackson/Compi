@@ -1,13 +1,15 @@
+#ifndef KUMQUAT_UTILS_GUARD
+#define KUMQUAT_UTILS_GUARD
 #include <complex>
 #include "Kumquat.hpp"
 
 namespace kumquat_internal {
 
-inline complex<Real> complex_from_c_complex(const Py_complex& c){
-    return complex<Real>(c.real,c.imag);
+inline std::complex<Real> complex_from_c_complex(const Py_complex& c){
+    return std::complex<Real>(c.real,c.imag);
 }
 
-inline Py_complex c_complex_from_complex(const complex<Real> c){
+inline Py_complex c_complex_from_complex(const std::complex<Real> c){
     return Py_complex = {c.real,c.imag};
 }
 
@@ -38,3 +40,4 @@ inline PyObject* copy_py_tuple(PyObject* tup){
 }
 
 }
+#endif
