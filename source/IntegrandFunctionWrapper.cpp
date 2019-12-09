@@ -2,7 +2,7 @@
 #include <utility>
 #include <stdexcept>
 
-#include "Kumquat.hpp"
+#include "kumquat.hpp"
 #include "utils.hpp"
 
 #include <boost/math/quadrature/gauss_kronrod>

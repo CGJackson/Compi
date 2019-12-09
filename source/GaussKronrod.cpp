@@ -1,6 +1,6 @@
 #include <complex>
 
-#include "Kumquat.hpp"
+#include "kumquat.hpp"
 #include "utils.hpp"
 
 extern "C" PyObject* integrate(PyObject* self, PyObject* args, PyObject* kw){
