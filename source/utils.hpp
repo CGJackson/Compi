@@ -1,0 +1,40 @@
+#include <complex>
+#include "Kumquat.hpp"
+
+namespace kumquat_internal {
+
+inline complex<Real> complex_from_c_complex(const Py_complex& c){
+    return complex<Real>(c.real,c.imag);
+}
+
+inline Py_complex c_complex_from_complex(const complex<Real> c){
+    return Py_complex = {c.real,c.imag};
+}
+
+inline bool convertable_to_py_complex(PyObject* obj){
+    return PyComplex_Check(obj) || (PyObject_HasAttrString(obj, "__complex__") && PyCallableCheck(PyObject_GetAttrString(obj,"__complex__")));
+}
+
+inline PyObject* copy_py_tuple(PyObject* tup){
+    if(!PyTupleCheck(tup)){
+        PyErr_SetString(PyExc_ValueError, "Object passed to copy_py_tuple was not a tuple");
+        return NULL;
+    }
+
+    const Py_ssize_t size = PyTuple_Size(tup)
+
+    PyObject* new_tup = PyTuple_New(size);
+    if(new_tup == NULL){
+        return NULL;
+    }
+
+    for(Py_ssize_t i = 0; i < size; ++i){
+        PyObject* elm = PyTuple_GET_ITEM(tup, i);
+        PyTuple_SET_ITEM(new_tup,i,elm);
+        Py_INCREF(elm);
+    }
+
+    return new_tup;
+}
+
+}
