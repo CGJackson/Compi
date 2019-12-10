@@ -1,9 +1,11 @@
 #include <complex>
 
 #include "kumquat.hpp"
+#include "integration_routines.hpp"
+#include "IntegrandFunctionWrapper.hpp"
 #include "utils.hpp"
 
-extern "C" PyObject* integrate(PyObject* self, PyObject* args, PyObject* kw){
+extern "C" static PyObject* integrate(PyObject* self, PyObject* args, PyObject* kw){
     using std::complex;
     using namespace kumquat_internal;
 

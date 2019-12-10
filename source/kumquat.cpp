@@ -1,7 +1,10 @@
 #include "kumquat.h"
+#include "integration_routines.hpp"
 
 // Method Table
 static PyMethodDef KumquatMethods[] = {
+    {"gauss_kronrod", guass_kronrod, METH_VARARGS,
+       "Performs gauss-kronrod integration"},
     {NULL,NULL,0,NULL}
 };
 
