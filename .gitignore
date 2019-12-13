@@ -105,3 +105,10 @@ venv.bak/
 
 # vim temporary files
 .swp
+
+# large boost library files that should not be tracked
+local_boost/
+boost_*.tar.bz2
+boost_*.tar.gz
+boost_*.7z
+boost_*.zip
