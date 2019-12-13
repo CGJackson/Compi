@@ -1,9 +1,9 @@
-#include "kumquat.h"
+#include "kumquat.hpp"
 #include "integration_routines.hpp"
 
 // Method Table
 static PyMethodDef KumquatMethods[] = {
-    {"gauss_kronrod", guass_kronrod, METH_VARARGS,
+    {"gauss_kronrod", gauss_kronrod, METH_VARARGS|METH_KEYWORDS,
        "Performs gauss-kronrod integration"},
     {NULL,NULL,0,NULL}
 };
@@ -21,5 +21,5 @@ static struct PyModuleDef KumquatModule = {
 
 // Module initialization function
 PyMODINIT_FUNC PyInit_kumquat(void){
-    return KumquatModule;
+    return PyModule_Create(&KumquatModule);
 }
