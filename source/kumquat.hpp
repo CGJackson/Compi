@@ -4,8 +4,6 @@
 #define PY_SSIZE_T_CLEAN
 #include <Python.h>
 
-typedef Real double;
-
-extern "C" static PyObject* integrate(PyObject* self, PyObject* args, PyObject* kw);
+typedef double Real;
 
 #endif
