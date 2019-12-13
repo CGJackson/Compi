@@ -79,7 +79,7 @@ IntegrandFunctionWrapper::IntegrandFunctionWrapper(PyObject * func,
     }
 }
 
-complex<Real> IntegrandFunctionWrapper::operator()(Real x){
+complex<Real> IntegrandFunctionWrapper::operator()(Real x) const{
     // Calls the Python function callback with x as a python float
     // and args as its other arguments and reutrns the result as a
     // std::complex

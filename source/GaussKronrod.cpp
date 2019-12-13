@@ -1,6 +1,7 @@
 #include "kumquat.hpp"
 
 #include <complex>
+#include <memory>
 
 #include <boost/math/quadrature/gauss_kronrod.hpp>
 #include <boost/math/tools/precision.hpp>
@@ -31,15 +32,15 @@ extern "C" PyObject* integrate(PyObject* self, PyObject* args, PyObject* kw){
     Real tolerance = boost::math::tools::root_epsilon<Real>();//TODO check if this is right
     
     if(!PyArg_ParseTupleAndKeywords(args,kw,"Odd|OOIId",allowed_keywords,
-                integrand,&x_min,&x_max,
+                &integrand,&x_min,&x_max,
                 extra_args,extra_kw,routine,max_depth,tolerance)){
         return NULL;
     }
     
     
-    IntegrandFunctionWrapper f;
+    std::unique_ptr<IntegrandFunctionWrapper> f;
     try{
-        IntegrandFunctionWrapper f{integrand,extra_args};
+        f = std::make_unique<IntegrandFunctionWrapper>(integrand,extra_args);
     } catch( const unable_to_construct_wrapper& e ){
         return NULL;
     } catch( const function_not_callable& e ){
@@ -54,19 +55,19 @@ extern "C" PyObject* integrate(PyObject* self, PyObject* args, PyObject* kw){
     try{
         switch(routine){//TODO there must be a better way...
             case 15:
-                result = gauss_kronrod<Real,15>::integrate(f,x_min,x_max,max_depth,tolerance,&err,&l1);
+                result = gauss_kronrod<Real,15>::integrate(*f,x_min,x_max,max_depth,tolerance,&err,&l1);
                 break;
             case 31:
-                result = gauss_kronrod<Real,31>::integrate(f,x_min,x_max,max_depth,tolerance,&err,&l1);
+                result = gauss_kronrod<Real,31>::integrate(*f,x_min,x_max,max_depth,tolerance,&err,&l1);
                 break;
             case 41:
-                result = gauss_kronrod<Real,41>::integrate(f,x_min,x_max,max_depth,tolerance,&err,&l1);
+                result = gauss_kronrod<Real,41>::integrate(*f,x_min,x_max,max_depth,tolerance,&err,&l1);
                 break;
             case 51:
-                result = gauss_kronrod<Real,51>::integrate(f,x_min,x_max,max_depth,tolerance,&err,&l1);
+                result = gauss_kronrod<Real,51>::integrate(*f,x_min,x_max,max_depth,tolerance,&err,&l1);
                 break;
             case 61:
-                result = gauss_kronrod<Real,61>::integrate(f,x_min,x_max,max_depth,tolerance,&err,&l1);
+                result = gauss_kronrod<Real,61>::integrate(*f,x_min,x_max,max_depth,tolerance,&err,&l1);
                 break;
             default:
                 PyErr_SetString(PyExc_ValueError,"Invalid number of points for integrate");

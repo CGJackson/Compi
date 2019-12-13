@@ -70,7 +70,7 @@ class IntegrandFunctionWrapper {//TODO handle keyword args
             Py_DECREF(args);
         }
 
-        std::complex<Real> operator()(Real x);
+        std::complex<Real> operator()(Real x) const;
 };
 }
 
