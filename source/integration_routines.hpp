@@ -3,6 +3,6 @@
 
 #include "kumquat.hpp"
 
-extern "C" static PyObject* integrate(PyObject* self, PyObject* args, PyObject* kw);
+extern "C" PyObject* integrate(PyObject* self, PyObject* args, PyObject* kw);
 
 #endif
