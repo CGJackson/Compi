@@ -107,6 +107,9 @@ venv.bak/
 # vim temporary files
 *.swp
 
+# vs code stuff
+.vscode/
+
 # large boost library files that should not be tracked
 local_boost/
 boost_*.tar.bz2
