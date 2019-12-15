@@ -31,7 +31,7 @@ IntegrandFunctionWrapper::IntegrandFunctionWrapper(PyObject * func,
                                         PyObject * new_args)
     :callback{func}{
     if( func == NULL){
-        if(PyErr_Occurred() != NULL){//TODO check if this should be ==
+        if(PyErr_Occurred() == NULL){//TODO check if this should be ==
                 PyErr_SetString(PyExc_TypeError,"No Valid Python Object passed to IntegrandFunctionWrapper"); 
         }
         throw unable_to_construct_wrapper("Function passed to IntegrandFunctionWrapper cannot be NULL");
