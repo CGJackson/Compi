@@ -60,20 +60,20 @@ class TestIntegrationRoutine():
                 0.0,1.0
                 )
 
-    def test_ValueError_if_bounds_not_float(self):
+    def test_TypeError_if_bounds_not_float(self):
         '''
         checks that the routine raises a ValueError if the bounds on
         the integration cannot be converted to a float
         '''
         perfectly_fine_function = lambda x: 0
 
-        self.assertRaises(ValueError,
+        self.assertRaises(TypeError,
                         self.test_routine,
                         perfectly_fine_function,
                         "Not a Float",
                         1.0)
 
-        self.assertRaises(ValueError,
+        self.assertRaises(TypeError,
                         self.test_routine,
                         perfectly_fine_function,
                         0.0,
