@@ -3,6 +3,7 @@
 
 #include "kumquat.hpp"
 
+#include <vector>
 
 namespace kumquat_internal {
 
@@ -44,13 +45,23 @@ class unable_to_form_arg_tuple: public std::runtime_error{
 class IntegrandFunctionWrapper {//TODO handle keyword args
     private:
         PyObject* callback;
-        PyObject* args;
+        std::vector<PyObject*> args;
         
+        // Forms a python tuple with a Py_Float of x in the first element, followed by the elements of args
+        PyObject* buildArgTuple(Real x) const;
+
     public:
         IntegrandFunctionWrapper() = delete;
         IntegrandFunctionWrapper(PyObject * func, PyObject * new_args = nullptr);
         IntegrandFunctionWrapper(const IntegrandFunctionWrapper& other);
         IntegrandFunctionWrapper(IntegrandFunctionWrapper&& other);
+
+        friend inline void swap(IntegrandFunctionWrapper& first, IntegrandFunctionWrapper& second) noexcept;
+
+        IntegrandFunctionWrapper& operator=(IntegrandFunctionWrapper other){
+            swap(*this, other);
+            return *this;
+        }
 
         // similar to move constructor, the most efficent thing to do here
         // simply seems to be to swap elements
@@ -59,19 +70,21 @@ class IntegrandFunctionWrapper {//TODO handle keyword args
             return *this;
         }
 
-        friend void swap(IntegrandFunctionWrapper& first, IntegrandFunctionWrapper& second) noexcept{
-            using std::swap;
-            swap(first.callback,second.callback);
-            swap(first.args,second.args);
-        }
-
         ~IntegrandFunctionWrapper(){
             Py_DECREF(callback);
-            Py_DECREF(args);
+            for(auto a: args){
+                Py_DECREF(a);
+            }
         }
 
         std::complex<Real> operator()(Real x) const;
 };
+
+inline void swap(IntegrandFunctionWrapper& first, IntegrandFunctionWrapper& second) noexcept{
+            using std::swap;
+            swap(first.callback,second.callback);
+            swap(first.args,second.args);
+}
 }
 
 #endif

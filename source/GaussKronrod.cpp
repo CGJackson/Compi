@@ -18,9 +18,9 @@ extern "C" PyObject* gauss_kronrod(PyObject* self, PyObject* args){
 
     Real x_min, x_max;
 
-    PyObject* extra_args = nullptr;
+    PyObject* extra_args = Py_None;
 
-    PyObject* extra_kw = nullptr;
+    PyObject* extra_kw = Py_None;
 
     unsigned routine = 31;
 
