@@ -1,7 +1,7 @@
 #ifndef KUMQUAT_UTILS_GUARD
 #define KUMQUAT_UTILS_GUARD
-#include <complex>
 #include "kumquat.hpp"
+#include <complex>
 
 namespace kumquat_internal {
 
