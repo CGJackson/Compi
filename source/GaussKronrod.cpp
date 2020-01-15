@@ -81,5 +81,7 @@ extern "C" PyObject* gauss_kronrod(PyObject* self, PyObject* args){
     }
 
     //TODO do something with L1 norm 
-    return Py_BuildValue("(Df)",c_complex_from_complex(result),err);
+    auto c_complex_result = c_complex_from_complex(result);
+
+    return Py_BuildValue("(Df)",&c_complex_result,err);
 }
