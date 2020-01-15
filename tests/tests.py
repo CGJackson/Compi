@@ -168,7 +168,7 @@ class TestIntegrationRoutine():
 
         _ = self.test_routine(test_function,0.0,1.0,arg_tuple)
 
-        self.assertEqual(arg_tuple, inital_arg_tuple)
+        self.assertEqual(arg_tuple, initial_arg_tuple)
         
     def test_extra_arg_tuple_reference_count(self):
         test_function = lambda x,y,z : 1j
