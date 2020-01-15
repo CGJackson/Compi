@@ -184,10 +184,10 @@ class TestIntegrationRoutine():
     def test_extra_args_reference_count(self):
         test_function = lambda x,y,z : 1j
 
-        arg1,arg2 = ('a', 'b')
+        arg1,arg2 = ('a', 0.43243)
 
         arg1_ref_count = sys.getrefcount(arg1)
-        arg2_ref_count = sys.getrefcount(arg1)
+        arg2_ref_count = sys.getrefcount(arg2)
 
         _ = self.test_routine(test_function,0.0,1.0,(arg1,arg2))
 
