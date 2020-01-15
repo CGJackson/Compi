@@ -1,5 +1,6 @@
 import unittest
 import kumquat
+import sys
 import cmath, math
 pi = cmath.pi
 
@@ -37,6 +38,24 @@ class TestIntegrationRoutine():
         result = self.test_routine(test_function,0.0,1.0)
 
         self.assertIsNotNone(result)
+
+    def test_integrand_reference_count_does_not_change(self):
+        test_func = lambda x: 1j
+
+        initial_ref_count = sys.getrefcount(test_func)
+        _ = self.test_routine(test_func, 0.0,1.0)
+        self.assertEqual(initial_ref_count, sys.getrefcount(test_func))
+
+    def test_bounds_reference_count_does_not_change(self):
+        test_func = lambda x: 1j
+
+        lower_bound,upper_bound = 0.0,1.0
+
+        lower_bound_initial_ref_count = sys.getrefcount(lower_bound)
+        upper_bound_initial_ref_count = sys.getrefcount(upper_bound)
+        _ = self.test_routine(test_func, 0.0,1.0)
+        self.assertEqual(lower_bound_initial_ref_count, sys.getrefcount(lower_bound))
+        self.assertEqual(upper_bound_initial_ref_count, sys.getrefcount(upper_bound))
 
     #Tests correctly raising errors
 
