@@ -33,13 +33,9 @@ extern "C" PyObject* gauss_kronrod(PyObject* self, PyObject* args){
                 extra_args,extra_kw,routine,max_depth,tolerance)){
         return NULL;
     }
-
-    if(extra_args == Py_None){
-        Py_INCREF(Py_None);
-    }
-    if(extra_kw == Py_None){
-        Py_INCREF(Py_None);
-    }
+    
+    Py_INCREF(extra_args);
+    Py_INCREF(extra_kw);
     
     std::unique_ptr<IntegrandFunctionWrapper> f;
     try{
@@ -86,12 +82,8 @@ extern "C" PyObject* gauss_kronrod(PyObject* self, PyObject* args){
         return NULL;
     }
 
-    if(extra_args == Py_None){
-        Py_DECREF(Py_None);
-    }
-    if(extra_kw == Py_None){
-        Py_DECREF(Py_None);
-    }
+    Py_DECREF(extra_args);
+    Py_DECREF(extra_kw);
 
     //TODO do something with L1 norm 
     auto c_complex_result = c_complex_from_complex(result);
