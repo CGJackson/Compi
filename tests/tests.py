@@ -21,13 +21,15 @@ class TestIntegrationRoutine():
 
         self.assertIsNotNone(result)
 
-    def test_return_complex(self):
+    def test_return_complex_float_pair(self):
         def test_function(x):
             return 1j
 
         result = self.test_routine(test_function,0.0,1.0)
 
-        self.assertIsInstance(result,complex)
+        self.assertIsInstance(result,tuple)
+        self.assertIsInstance(result[0],complex)
+        self.assertIsInstance(result[1],float)
 
     def test_runs_with_lambda_function(self):
         test_function = lambda x: 1j
@@ -104,7 +106,7 @@ class TestFiniteIntevalIntegration():
         '''
         tests that the integral of exp(i x) ~ 0 over 1 period
         '''
-        result = self.test_routine(lambda x: cmath.exp(1j*x), 0, 2*pi)
+        result, err = self.test_routine(lambda x: cmath.exp(1j*x), 0, 2*pi)
         self.assertAlmostEqual(result.real,0.0,places=self.tolerance)
         self.assertAlmostEqual(result.imag,0.0,places=self.tolerance)
 
@@ -112,7 +114,7 @@ class TestFiniteIntevalIntegration():
         '''
         checks that the integal of a simple quadratic function is correct
         '''
-        result = self.test_routine(lambda x: 3*(x-1j)**2, 0.0,1.0)
+        result, err = self.test_routine(lambda x: 3*(x-1j)**2, 0.0,1.0)
         expected_result = ( (1-1j)**3 ) - ( (-1j)**3 )
         self.assertAlmostEqual(result.real,expected_result.real,places=self.tolerance)
         self.assertAlmostEqual(result.imag,expected_result.imag,places=self.tolerance)
@@ -126,7 +128,7 @@ class TestFiniteIntevalIntegration():
         def complicated_func(x):
             return math.exp(x) + 1j* math.exp(x**2)
 
-        result = self.test_routine(complicated_func, 0, 5)
+        result, err = self.test_routine(complicated_func, 0, 5)
         self.assertGreater(result.real,0.0)
         self.assertGreater(result.imag,0.0)
 
