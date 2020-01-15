@@ -89,7 +89,7 @@ PyObject* IntegrandFunctionWrapper::buildArgTuple(Real x) const{
 
     PyTuple_SET_ITEM(arg_tuple,0,py_x);
 
-    for(Py_ssize_t i = 1; i <= this->args.size(); ++i){
+    for(Py_ssize_t i = 1; i <= static_cast<Py_ssize_t>(this->args.size()); ++i){
         PyTuple_SET_ITEM(arg_tuple, i, this->args[i]);
         Py_INCREF(this->args[i]);
     }
