@@ -82,7 +82,7 @@ PyObject* IntegrandFunctionWrapper::buildArgTuple(Real x) const{
         throw unable_to_construct_py_object("error converting callback arg to Py_Float");
     }
 
-    PyObject* arg_tuple = PyTuple_New(this->args.size());
+    PyObject* arg_tuple = PyTuple_New(this->args.size()+1);
     if(arg_tuple == NULL){
         throw unable_to_form_arg_tuple("unable construct arg tuple");
     }
@@ -119,11 +119,11 @@ complex<Real> IntegrandFunctionWrapper::operator()(Real x) const{
         throw function_did_not_return_complex("The return value of the integrand function could not be converted to a complex number", 
                 "The function passed to IntegrandFunctionWrapper did not return a value that culd be converted to complex");
     }
-
+    
     complex<Real> cpp_result = complex_from_c_complex(PyComplex_AsCComplex(py_result));
 
     Py_DECREF(py_result);
-
+    
     return cpp_result;
 }
 
