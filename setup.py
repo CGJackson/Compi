@@ -5,7 +5,7 @@ src = 'source/'
 boost_path = './local_boost'
 
 setup(name='Kumquat',
-      version='0.1',
+      version='0.2',
       author='Conor Jackson',
       author_email='conorgjackson@gmail.com',
       url='https://github.com/CGJackson/Kumquat',
