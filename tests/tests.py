@@ -1,6 +1,6 @@
 import unittest
 import kumquat
-import sys
+import sys,copy
 import cmath, math
 pi = cmath.pi
 
@@ -119,6 +119,80 @@ class TestIntegrationRoutine():
                           self.test_routine,
                           does_not_return_complex,
                           0.0,1.0 )
+
+    # Test extra args passed correctly
+
+    def test_runs_for_integrand_with_1_extra_arg(self):
+        test_function = lambda x, y: 1j
+
+        result = self.test_routine(test_function,0.0,1.0,('a',))
+        self.assertIsNotNone(result)
+
+    def test_runs_for_integrand_with_2_extra_args(self):
+        test_function = lambda x, y,z: 1j
+
+        result = self.test_routine(test_function,0.0,1.0,('a',5))
+        self.assertIsNotNone(result)
+
+    def test_extra_args_change_result(self):
+        test_function = lambda x,y: complex(y)
+
+        result1,_ = self.test_routine(test_function,0.0,1.0,(1j,))
+        result2,_ = self.test_routine(test_function,0.0,1.0,(2j,))
+
+        self.assertNotAlmostEqual(result1,result2)
+
+    def test_TypeError_if_extra_args_expected_but_not_given(self):
+        def test_func(x,y):
+            return 1j
+
+        self.assertRaises(TypeError,self.test_routine,0.0,1.0)
+
+    def test_TypeError_if_no_extra_args_expected_but_some_given(self):
+        def test_func(x):
+            return 1j
+
+        self.assertRaises(TypeError,self.test_routine,0.0,1.0,(1,2))
+        
+    def test_TypeError_if_wrong_number_of_extra_args_given(self):
+        def test_func(x,y):
+            return 1j
+
+        self.assertRaises(TypeError,self.test_routine,0.0,1.0,(1,2))
+
+    def test_extra_arg_tuple_unchanged(self):
+        test_function = lambda x,y,z : 1j
+
+        arg_tuple = ('a', [1,2])
+        initial_arg_tuple = copy.deepcopy(arg_tuple)
+
+        _ = self.test_routine(test_function,0.0,1.0,arg_tuple)
+
+        self.assertEqual(arg_tuple, inital_arg_tuple)
+        
+    def test_extra_arg_tuple_reference_count(self):
+        test_function = lambda x,y,z : 1j
+
+        arg_tuple = ('a', 'b')
+
+        arg_tuple_ref_count = sys.getrefcount(arg_tuple)
+
+        _ = self.test_routine(test_function,0.0,1.0,arg_tuple)
+
+        self.assertEqual(arg_tuple_ref_count, sys.getrefcount(arg_tuple))
+
+    def test_extra_args_reference_count(self):
+        test_function = lambda x,y,z : 1j
+
+        arg1,arg2 = ('a', 'b')
+
+        arg1_ref_count = sys.getrefcount(arg1)
+        arg2_ref_count = sys.getrefcount(arg1)
+
+        _ = self.test_routine(test_function,0.0,1.0,(arg1,arg2))
+
+        self.assertEqual(arg1_ref_count, sys.getrefcount(arg1))
+        self.assertEqual(arg2_ref_count, sys.getrefcount(arg2))
 
 class TestFiniteIntevalIntegration():
     
