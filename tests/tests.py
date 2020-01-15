@@ -39,7 +39,13 @@ class TestIntegrationRoutine():
 
         self.assertIsNotNone(result)
 
+    # Test reference counting
+
     def test_integrand_reference_count_does_not_change(self):
+        '''
+        Tests that the reference count of the function to be integrated does not change
+        due to being passed to the integration routine
+        '''
         test_func = lambda x: 1j
 
         initial_ref_count = sys.getrefcount(test_func)
