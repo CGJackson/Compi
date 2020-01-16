@@ -10,7 +10,9 @@ class TestIntegrationRoutine():
     '''
 
     def setUp(self):
-        self.routine_to_test = None
+        def dumby_routine(f,a,b,*args,**kwargs):
+            raise NotImplementedError("A dumby routine has been called in place of a routine to be tested")
+        self.routine_to_test = dumby_routine
         self.tolerance = 7 #number of dp
 
     # Test basic funcitonality
