@@ -219,6 +219,60 @@ class TestIntegrationRoutine():
 
         self.assertNotAlmostEqual(result1,result2)
 
+    def test_TypeError_for_unexpected_kwargs(self):
+        def test_func(x):
+            return 1j
+
+        self.assertRaises(TypeError,self.routine_to_test,test_func,0.0,1.0,(),{'kw':'spam'})
+
+    def test_kwarg_dict_unchanged(self):
+        def test_func(x,kw=4):
+            return 1j
+
+        kw_dict = {'kw':5}
+        initial_kw_dict = copy.deepcopy(kw_dict)
+
+        _ = self.routine_to_test(test_func,0.0,1.0,(),kw_dict)
+
+        self.assertEqual(kw_dict,initial_kw_dict)
+
+    def test_kwarg_dict_reference_count_unchenged(self):
+        def test_func(x,kw=3):
+            return 1j
+
+        kw_dict = {'kw':5}
+
+        initial_ref_count = sys.getrefcount(kw_dict)
+
+        _ = self.routine_to_test(test_func,0.0,1.0,(),kw_dict)
+
+        self.assertEqual(initial_ref_count, sys.getrefcount(kw_dict))
+
+    def test_kwarg_args_reference_count_unchanged(self):
+        def test_func(x,kw=3):
+            return 1j
+
+        kw_arg = [2,4]
+        kw_dict = {'kw':kw_arg}
+
+        initial_ref_count = sys.getrefcount(kw_arg)
+
+        _ = self.routine_to_test(test_func,0.0,1.0,(),kw_dict)
+
+        self.assertEqual(initial_ref_count, sys.getrefcount(kw_arg))
+
+    def test_kwargs_reference_count_unchanged(self):
+        def test_func(x,kw=3):
+            return 1j
+        kw_name = 'kw'
+        kw_dict = {kw_name:5}
+
+        initial_ref_count = sys.getrefcount(kw_name)
+
+        _ = self.routine_to_test(test_func,0.0,1.0,(),kw_dict)
+
+        self.assertEqual(initial_ref_count, sys.getrefcount(kw_name))
+
 class TestFiniteIntevalIntegration():
     
     # Note the purpose of these tests is not to test the unerlying
