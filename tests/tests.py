@@ -146,19 +146,19 @@ class TestIntegrationRoutine():
         def test_func(x,y):
             return 1j
 
-        self.assertRaises(TypeError,self.routine_to_test,0.0,1.0)
+        self.assertRaises(TypeError,self.routine_to_test,test_func,0.0,1.0)
 
     def test_TypeError_if_no_extra_args_expected_but_some_given(self):
         def test_func(x):
             return 1j
 
-        self.assertRaises(TypeError,self.routine_to_test,0.0,1.0,(1,2))
+        self.assertRaises(TypeError,self.routine_to_test,test_func,0.0,1.0,(1,2))
         
     def test_TypeError_if_wrong_number_of_extra_args_given(self):
         def test_func(x,y):
             return 1j
 
-        self.assertRaises(TypeError,self.routine_to_test,0.0,1.0,(1,2))
+        self.assertRaises(TypeError,self.routine_to_test,test_func,0.0,1.0,(1,2))
 
     def test_extra_arg_tuple_unchanged(self):
         test_function = lambda x,y,z : 1j
@@ -193,6 +193,30 @@ class TestIntegrationRoutine():
 
         self.assertEqual(arg1_ref_count, sys.getrefcount(arg1))
         self.assertEqual(arg2_ref_count, sys.getrefcount(arg2))
+
+    # Test Kwargs passed correctly
+    def test_runs_for_integrand_with_1_kwarg(self):
+        def test_function(x,y='kw'):
+            return 1j
+
+        result = self.routine_to_test(test_function,0.0,1.0,(),{'y':9})
+        self.assertIsNotNone(result)
+
+    def test_runs_for_integrand_with_2_kwargs(self):
+        def test_function(x,y='kw',z=2):
+            return 1j
+
+        result = self.routine_to_test(test_function,0.0,1.0,(),{'y':9,'z':'f'})
+        self.assertIsNotNone(result)
+
+    def test_kwargs_change_result(self):
+        def test_function(x,kw=1j): 
+            return complex(kw)
+        
+        result1,_ = self.routine_to_test(test_function,0.0,1.0,())
+        result2,_ = self.routine_to_test(test_function,0.0,1.0,(),{'kw':2j})
+
+        self.assertNotAlmostEqual(result1,result2)
 
 class TestFiniteIntevalIntegration():
     
