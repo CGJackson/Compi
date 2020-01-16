@@ -4,6 +4,7 @@
 #include "kumquat.hpp"
 
 #include <vector>
+#include <utility>
 
 namespace kumquat_internal {
 
@@ -46,6 +47,7 @@ class IntegrandFunctionWrapper {//TODO handle keyword args
     private:
         PyObject* callback;
         std::vector<PyObject*> args;
+        std::vector<std::pair<PyObject*,PyObject*>> kws;
         
         // Forms a python tuple with a Py_Float of x in the first element, followed by the elements of args
         PyObject* buildArgTuple(Real x) const;

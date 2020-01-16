@@ -30,8 +30,8 @@ IntegrandFunctionWrapper::IntegrandFunctionWrapper(IntegrandFunctionWrapper&& ot
         }
 IntegrandFunctionWrapper::IntegrandFunctionWrapper(PyObject * func, 
                                         PyObject* new_args, PyObject* new_kw)
-    :callback{func}, args{} {
-    if( func == NULL){
+    :callback{func}, args{}, kws{} {
+    if( callback == NULL){
         if(PyErr_Occurred() == NULL){
                 PyErr_SetString(PyExc_TypeError,"No valid Python object passed to IntegrandFunctionWrapper to wrap"); 
         }
@@ -45,25 +45,25 @@ IntegrandFunctionWrapper::IntegrandFunctionWrapper(PyObject * func,
         throw unable_to_construct_wrapper("Function arguments passed to IntegrandFunctionWrapper cannot be NULL");
     }
 
-    if(!PyCallable_Check(func)){
+    if(!PyCallable_Check(callback)){
         throw function_not_callable("The Python Object for IntegrandFunctionWrapper to wrap was not callable", "Unable to wrap uncallable object");
     }
 
-    Py_INCREF(func); 
+    Py_INCREF(callback); 
 
     if(new_args  == Py_None){
         return;
     }
 
     if(!PyTuple_Check(new_args)){
-        Py_DECREF(func);
+        Py_DECREF(callback);
         throw arg_list_not_tuple("The argument list given to IntegrandFunctionWrapper was not a Python Tuple", "The extra arguments passed to the function wrapper were not a valid python tuple");
     }
         
     const Py_ssize_t extra_arg_count = PyTuple_GET_SIZE(new_args);
     if(extra_arg_count >= PY_SSIZE_T_MAX){
         PyErr_SetString(PyExc_TypeError,"Too many arguments provided to integrand function");
-        Py_DECREF(func);
+        Py_DECREF(callback);
         throw unable_to_construct_wrapper("Too many arguments provided");
     }
 
