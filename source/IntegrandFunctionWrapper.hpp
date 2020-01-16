@@ -52,7 +52,7 @@ class IntegrandFunctionWrapper {//TODO handle keyword args
 
     public:
         IntegrandFunctionWrapper() = delete;
-        IntegrandFunctionWrapper(PyObject * func, PyObject * new_args = nullptr);
+        IntegrandFunctionWrapper(PyObject* func, PyObject* new_args = Py_None, PyObject* new_kw = Py_None);
         IntegrandFunctionWrapper(const IntegrandFunctionWrapper& other);
         IntegrandFunctionWrapper(IntegrandFunctionWrapper&& other);
 

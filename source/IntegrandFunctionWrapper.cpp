@@ -29,7 +29,7 @@ IntegrandFunctionWrapper::IntegrandFunctionWrapper(IntegrandFunctionWrapper&& ot
             }
         }
 IntegrandFunctionWrapper::IntegrandFunctionWrapper(PyObject * func, 
-                                        PyObject * new_args)
+                                        PyObject* new_args, PyObject* new_kw)
     :callback{func}, args{} {
     if( func == NULL){
         if(PyErr_Occurred() == NULL){
