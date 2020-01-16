@@ -10,6 +10,7 @@ class TestIntegrationRoutine():
     '''
 
     def setUp(self):
+        self.routine_to_test = None
         self.tolerance = 7 #number of dp
 
     # Test basic funcitonality
