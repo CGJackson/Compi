@@ -34,19 +34,18 @@ extern "C" PyObject* gauss_kronrod(PyObject* self, PyObject* args){
         return NULL;
     }
     
-    Py_INCREF(extra_args);
-    Py_INCREF(extra_kw);
-    
     std::unique_ptr<IntegrandFunctionWrapper> f;
     try{
-        f = std::make_unique<IntegrandFunctionWrapper>(integrand,extra_args);
+        f = std::make_unique<IntegrandFunctionWrapper>(integrand,extra_args,extra_kw);
     } catch( const unable_to_construct_wrapper& e ){
         return NULL;
     } catch( const function_not_callable& e ){
         return NULL;
     } catch( const arg_list_not_tuple& e ){
         return NULL;
-    }
+    } catch( const kwargs_given_not_dict& e){
+        return NULL;
+    } 
 
     complex<Real> result;
     Real err,l1;
@@ -81,9 +80,6 @@ extern "C" PyObject* gauss_kronrod(PyObject* self, PyObject* args){
     } catch( const function_did_not_return_complex& e ){
         return NULL;
     }
-
-    Py_DECREF(extra_args);
-    Py_DECREF(extra_kw);
 
     //TODO do something with L1 norm 
     auto c_complex_result = c_complex_from_complex(result);

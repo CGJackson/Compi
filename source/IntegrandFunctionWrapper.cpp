@@ -12,8 +12,11 @@ namespace kumquat_internal {
 using std::complex;
 
 IntegrandFunctionWrapper::IntegrandFunctionWrapper(const IntegrandFunctionWrapper& other)
-            :callback{other.callback}, args{other.args} {
+            :callback{other.callback}, args{other.args},kwargs{other.kwargs} {
             Py_INCREF(other.callback);
+            if(kwargs){
+                Py_INCREF(kwargs);
+            }
             for(auto a: args){
                 Py_INCREF(a);
             }
@@ -22,15 +25,18 @@ IntegrandFunctionWrapper::IntegrandFunctionWrapper(const IntegrandFunctionWrappe
         //I can't think of a more efficent way to leave the orignial
         //in a valid state after moving than simply copying
 IntegrandFunctionWrapper::IntegrandFunctionWrapper(IntegrandFunctionWrapper&& other)
-            :callback{other.callback}, args{other.args} {
+            :callback{other.callback}, args{other.args} ,kwargs{other.kwargs}{
             Py_INCREF(other.callback);
+            if(kwargs){
+                Py_INCREF(kwargs);
+            }
             for(auto a: args){
                 Py_INCREF(a);
             }
         }
 IntegrandFunctionWrapper::IntegrandFunctionWrapper(PyObject * func, 
                                         PyObject* new_args, PyObject* new_kw)
-    :callback{func}, args{}, kws{} {
+    :callback{func}, args{}{
     if( callback == NULL){
         if(PyErr_Occurred() == NULL){
                 PyErr_SetString(PyExc_TypeError,"No valid Python object passed to IntegrandFunctionWrapper to wrap"); 
@@ -45,8 +51,23 @@ IntegrandFunctionWrapper::IntegrandFunctionWrapper(PyObject * func,
         throw unable_to_construct_wrapper("Function arguments passed to IntegrandFunctionWrapper cannot be NULL");
     }
 
+    if(new_kw == NULL){
+        if(PyErr_Occurred() == NULL){
+            PyErr_SetString(PyExc_TypeError, "No valid Python object was passed to IntegrandFuncitonWrapper as funciton keyword arguments");
+        }
+        throw unable_to_construct_wrapper("Function keyword arguments passed to IntegrandFunctionWrapper cannot be NULL");
+    }
+
     if(!PyCallable_Check(callback)){
         throw function_not_callable("The Python Object for IntegrandFunctionWrapper to wrap was not callable", "Unable to wrap uncallable object");
+    }
+
+    if(PyDict_Check(new_kw)){
+        kwargs = new_kw;
+        Py_INCREF(kwargs);
+    }
+    else if(new_kw != Py_None){
+        throw kwargs_given_not_dict("The keyword args given to IntegrandFunctionWrapper were not a Python dict or None","The keyword arguments passed to the function wrapper were not a valid python dict");
     }
 
     Py_INCREF(callback); 
@@ -57,6 +78,7 @@ IntegrandFunctionWrapper::IntegrandFunctionWrapper(PyObject * func,
 
     if(!PyTuple_Check(new_args)){
         Py_DECREF(callback);
+        Py_DECREF(kwargs);
         throw arg_list_not_tuple("The argument list given to IntegrandFunctionWrapper was not a Python Tuple", "The extra arguments passed to the function wrapper were not a valid python tuple");
     }
         
@@ -64,6 +86,7 @@ IntegrandFunctionWrapper::IntegrandFunctionWrapper(PyObject * func,
     if(extra_arg_count >= PY_SSIZE_T_MAX){
         PyErr_SetString(PyExc_TypeError,"Too many arguments provided to integrand function");
         Py_DECREF(callback);
+        Py_DECREF(kwargs);
         throw unable_to_construct_wrapper("Too many arguments provided");
     }
 
@@ -103,8 +126,7 @@ complex<Real> IntegrandFunctionWrapper::operator()(Real x) const{
     
     
     PyObject* arg_tuple = this->buildArgTuple(x);
-
-    PyObject* py_result = PyObject_CallObject(callback, arg_tuple);
+    PyObject* py_result = PyObject_Call(callback, arg_tuple, kwargs);
     
 
     if(py_result == NULL){
@@ -125,8 +147,6 @@ complex<Real> IntegrandFunctionWrapper::operator()(Real x) const{
     
     return cpp_result;
 }
-
-
 
 
 }

@@ -4,7 +4,6 @@
 #include "kumquat.hpp"
 
 #include <vector>
-#include <utility>
 
 namespace kumquat_internal {
 
@@ -32,6 +31,13 @@ class arg_list_not_tuple: public std::invalid_argument{
         PyErr_SetString(PyExc_ValueError,python_message);
     }
 };
+class kwargs_given_not_dict: public std::invalid_argument{
+    using std::invalid_argument::invalid_argument;
+    public:
+        kwargs_given_not_dict(const char * c_message, const char* python_message): std::invalid_argument(c_message){
+        PyErr_SetString(PyExc_ValueError,python_message);
+    }
+};
 class function_did_not_return_complex: public std::invalid_argument{
     using std::invalid_argument::invalid_argument;
     public:
@@ -47,7 +53,7 @@ class IntegrandFunctionWrapper {//TODO handle keyword args
     private:
         PyObject* callback;
         std::vector<PyObject*> args;
-        std::vector<std::pair<PyObject*,PyObject*>> kws;
+        PyObject* kwargs = NULL;
         
         // Forms a python tuple with a Py_Float of x in the first element, followed by the elements of args
         PyObject* buildArgTuple(Real x) const;
@@ -74,6 +80,9 @@ class IntegrandFunctionWrapper {//TODO handle keyword args
 
         ~IntegrandFunctionWrapper(){
             Py_DECREF(callback);
+            if(kwargs != NULL){
+                Py_DECREF(kwargs);
+            }
             for(auto a: args){
                 Py_DECREF(a);
             }
