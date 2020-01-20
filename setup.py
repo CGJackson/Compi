@@ -19,7 +19,7 @@ def check_valid_boost_path(path):
       Returns True if the path entered gives the location of the boost library
       '''
       #TODO perform more extensive checks that path is valid
-      return os.path.isdir(path)
+      return os.path.isdir(path) and os.path.isdir(path+"/boost/math/quadrature")
 
 def set_boost_path():
       for path in boost_library_search_locations:
