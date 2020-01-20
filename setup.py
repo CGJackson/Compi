@@ -22,7 +22,7 @@ def check_valid_boost_path(path):
       at a minimum, all files required by Kumquat
       '''
 
-      include_regex = re.compile(r'#include <(boost/\S*)>')
+      include_regex = re.compile(r'#include <(boost/\S*)>') # matches a c++ include for a boost header file
 
       quad = "boost/math/quadrature/"
       files_required = {quad+"gauss_kronrod.hpp","boost/math/tools/precision.hpp"}
