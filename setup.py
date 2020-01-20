@@ -67,7 +67,7 @@ def set_boost_path():
             
 
 boost_path = set_boost_path()
-print(f"Using {boost_path} as boost location\n")
+print(f"Using " + boost_path + " as boost location\n")
 
 src = 'source/'
 
