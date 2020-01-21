@@ -12,7 +12,7 @@ import readline # makes terminal input nice
 
 boost_library_search_locations = (
                                     "/usr/include/boost",
-                                    "./local_boost"
+                                    "local_boost"
                                  )
 #############################################################################################
 
