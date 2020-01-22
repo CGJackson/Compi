@@ -64,7 +64,7 @@ extern "C" PyObject* gauss_kronrod(PyObject* self, PyObject* args){
     try{
         result = integration_routines.at(routine)(*f,x_min,x_max,max_depth,tolerance,&err,&l1);
     } catch (const std::out_of_range& e){
-        PyErr_SetString(PyExc_ValueError,"Invalid number of points for integrate");
+        PyErr_SetString(PyExc_ValueError,"Invalid number of points for gauss_kronrod");
         return NULL;
     } catch( const unable_to_construct_py_object& e ){
         return NULL;
