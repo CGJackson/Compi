@@ -13,6 +13,7 @@ class TestIntegrationRoutine():
         def dumby_routine(f,a,b,*args,**kwargs):
             raise NotImplementedError("A dumby routine has been called in place of a routine to be tested")
         self.routine_to_test = dumby_routine
+        self.default_range = ()
         self.tolerance = 7 #number of dp
 
     # Test basic funcitonality
@@ -21,7 +22,7 @@ class TestIntegrationRoutine():
         def test_function(x):
             return 1j
 
-        result = self.routine_to_test(test_function,0.0,1.0)
+        result = self.routine_to_test(test_function,*self.default_range)
 
         self.assertIsNotNone(result)
 
@@ -29,7 +30,7 @@ class TestIntegrationRoutine():
         def test_function(x):
             return 1j
 
-        result = self.routine_to_test(test_function,0.0,1.0)
+        result = self.routine_to_test(test_function,*self.default_range)
 
         self.assertIsInstance(result,tuple)
         self.assertEqual(3,len(result))
@@ -40,7 +41,7 @@ class TestIntegrationRoutine():
     def test_runs_with_lambda_function(self):
         test_function = lambda x: 1j
         
-        result = self.routine_to_test(test_function,0.0,1.0)
+        result = self.routine_to_test(test_function,*self.default_range)
 
         self.assertIsNotNone(result)
 
@@ -60,13 +61,14 @@ class TestIntegrationRoutine():
     def test_bounds_reference_count_does_not_change(self):
         test_func = lambda x: 1j
 
-        lower_bound,upper_bound = 0.0,1.0
+        # Note unpythonic use of iterating over an index to avoid creating references in loop variables
+        # which must then be kept track of
 
-        lower_bound_initial_ref_count = sys.getrefcount(lower_bound)
-        upper_bound_initial_ref_count = sys.getrefcount(upper_bound)
-        _ = self.routine_to_test(test_func, 0.0,1.0)
-        self.assertEqual(lower_bound_initial_ref_count, sys.getrefcount(lower_bound))
-        self.assertEqual(upper_bound_initial_ref_count, sys.getrefcount(upper_bound))
+        intial_bounds_ref_counts = [sys.getrefcount(self.default_range[i]) for i in range(len(self.default_range))]
+
+        _ = self.routine_to_test(test_func, *self.default_range)
+        for i,initial_ref_count in enumerate(intial_bounds_ref_counts):
+            self.assertEqual(initial_ref_count, sys.getrefcount(self.default_range[i]))
 
     #Tests correctly raising errors
 
@@ -89,7 +91,7 @@ class TestIntegrationRoutine():
         self.assertRaises(TestFunctionRaisingException,
                 self.routine_to_test,
                 exception_raising_function,
-                0.0,1.0
+                *self.default_range
                 )
 
     def test_TypeError_if_bounds_not_float(self):
@@ -99,17 +101,14 @@ class TestIntegrationRoutine():
         '''
         perfectly_fine_function = lambda x: 0
 
-        self.assertRaises(TypeError,
-                        self.routine_to_test,
-                        perfectly_fine_function,
-                        "Not a Float",
-                        1.0)
+        for i, _ in enumerate(self.default_range):
+            test_range = tuple(f if j != i else "Not a float" for j,f in enumerate(self.default_range))
 
-        self.assertRaises(TypeError,
-                        self.routine_to_test,
-                        perfectly_fine_function,
-                        0.0,
-                        "Not a Float")
+            self.assertRaises(TypeError,
+                            self.routine_to_test,
+                            perfectly_fine_function,
+                            *test_range)
+
 
     def test_ValueError_if_function_does_not_return_complex(self):
         '''
@@ -123,27 +122,27 @@ class TestIntegrationRoutine():
         self.assertRaises(ValueError,
                           self.routine_to_test,
                           does_not_return_complex,
-                          0.0,1.0 )
+                          *self.default_range)
 
     # Test extra args passed correctly
 
     def test_runs_for_integrand_with_1_extra_arg(self):
         test_function = lambda x, y: 1j
 
-        result = self.routine_to_test(test_function,0.0,1.0,('a',))
+        result = self.routine_to_test(test_function,*self.default_range,('a',))
         self.assertIsNotNone(result)
 
     def test_runs_for_integrand_with_2_extra_args(self):
         test_function = lambda x, y,z: 1j
 
-        result = self.routine_to_test(test_function,0.0,1.0,('a',5))
+        result = self.routine_to_test(test_function,*self.default_range,('a',5))
         self.assertIsNotNone(result)
 
     def test_extra_args_change_result(self):
         test_function = lambda x,y: complex(y)
 
-        result1,*_ = self.routine_to_test(test_function,0.0,1.0,(1j,))
-        result2,*_ = self.routine_to_test(test_function,0.0,1.0,(2j,))
+        result1,*_ = self.routine_to_test(test_function,*self.default_range,(1j,))
+        result2,*_ = self.routine_to_test(test_function,*self.default_range,(2j,))
 
         self.assertNotAlmostEqual(result1,result2)
 
@@ -151,19 +150,19 @@ class TestIntegrationRoutine():
         def test_func(x,y):
             return 1j
 
-        self.assertRaises(TypeError,self.routine_to_test,test_func,0.0,1.0)
+        self.assertRaises(TypeError,self.routine_to_test,test_func,*self.default_range)
 
     def test_TypeError_if_no_extra_args_expected_but_some_given(self):
         def test_func(x):
             return 1j
 
-        self.assertRaises(TypeError,self.routine_to_test,test_func,0.0,1.0,(1,2))
+        self.assertRaises(TypeError,self.routine_to_test,test_func,*self.default_range,(1,2))
         
     def test_TypeError_if_wrong_number_of_extra_args_given(self):
         def test_func(x,y):
             return 1j
 
-        self.assertRaises(TypeError,self.routine_to_test,test_func,0.0,1.0,(1,2))
+        self.assertRaises(TypeError,self.routine_to_test,test_func,*self.default_range,(1,2))
 
     def test_extra_arg_tuple_unchanged(self):
         test_function = lambda x,y,z : 1j
@@ -171,7 +170,7 @@ class TestIntegrationRoutine():
         arg_tuple = ('a', [1,2])
         initial_arg_tuple = copy.deepcopy(arg_tuple)
 
-        _ = self.routine_to_test(test_function,0.0,1.0,arg_tuple)
+        _ = self.routine_to_test(test_function,*self.default_range,arg_tuple)
 
         self.assertEqual(arg_tuple, initial_arg_tuple)
         
@@ -182,7 +181,7 @@ class TestIntegrationRoutine():
 
         arg_tuple_ref_count = sys.getrefcount(arg_tuple)
 
-        _ = self.routine_to_test(test_function,0.0,1.0,arg_tuple)
+        _ = self.routine_to_test(test_function,*self.default_range,arg_tuple)
 
         self.assertEqual(arg_tuple_ref_count, sys.getrefcount(arg_tuple))
 
@@ -194,7 +193,7 @@ class TestIntegrationRoutine():
         arg1_ref_count = sys.getrefcount(arg1)
         arg2_ref_count = sys.getrefcount(arg2)
 
-        _ = self.routine_to_test(test_function,0.0,1.0,(arg1,arg2))
+        _ = self.routine_to_test(test_function,*self.default_range,(arg1,arg2))
 
         self.assertEqual(arg1_ref_count, sys.getrefcount(arg1))
         self.assertEqual(arg2_ref_count, sys.getrefcount(arg2))
@@ -204,22 +203,22 @@ class TestIntegrationRoutine():
         def test_function(x,y='kw'):
             return 1j
 
-        result = self.routine_to_test(test_function,0.0,1.0,(),{'y':9})
+        result = self.routine_to_test(test_function,*self.default_range,(),{'y':9})
         self.assertIsNotNone(result)
 
     def test_runs_for_integrand_with_2_kwargs(self):
         def test_function(x,y='kw',z=2):
             return 1j
 
-        result = self.routine_to_test(test_function,0.0,1.0,(),{'y':9,'z':'f'})
+        result = self.routine_to_test(test_function,*self.default_range,(),{'y':9,'z':'f'})
         self.assertIsNotNone(result)
 
     def test_kwargs_change_result(self):
         def test_function(x,kw=1j): 
             return complex(kw)
         
-        result1,*_ = self.routine_to_test(test_function,0.0,1.0,())
-        result2,*_ = self.routine_to_test(test_function,0.0,1.0,(),{'kw':2j})
+        result1,*_ = self.routine_to_test(test_function,*self.default_range,())
+        result2,*_ = self.routine_to_test(test_function,*self.default_range,(),{'kw':2j})
 
         self.assertNotAlmostEqual(result1,result2)
 
@@ -227,7 +226,7 @@ class TestIntegrationRoutine():
         def test_func(x):
             return 1j
 
-        self.assertRaises(TypeError,self.routine_to_test,test_func,0.0,1.0,(),{'kw':'spam'})
+        self.assertRaises(TypeError,self.routine_to_test,test_func,*self.default_range,(),{'kw':'spam'})
 
     def test_kwarg_dict_unchanged(self):
         def test_func(x,kw=4):
@@ -236,7 +235,7 @@ class TestIntegrationRoutine():
         kw_dict = {'kw':5}
         initial_kw_dict = copy.deepcopy(kw_dict)
 
-        _ = self.routine_to_test(test_func,0.0,1.0,(),kw_dict)
+        _ = self.routine_to_test(test_func,*self.default_range,(),kw_dict)
 
         self.assertEqual(kw_dict,initial_kw_dict)
 
@@ -248,7 +247,7 @@ class TestIntegrationRoutine():
 
         initial_ref_count = sys.getrefcount(kw_dict)
 
-        _ = self.routine_to_test(test_func,0.0,1.0,(),kw_dict)
+        _ = self.routine_to_test(test_func,*self.default_range,(),kw_dict)
 
         self.assertEqual(initial_ref_count, sys.getrefcount(kw_dict))
 
@@ -261,7 +260,7 @@ class TestIntegrationRoutine():
 
         initial_ref_count = sys.getrefcount(kw_arg)
 
-        _ = self.routine_to_test(test_func,0.0,1.0,(),kw_dict)
+        _ = self.routine_to_test(test_func,*self.default_range,(),kw_dict)
 
         self.assertEqual(initial_ref_count, sys.getrefcount(kw_arg))
 
@@ -273,7 +272,7 @@ class TestIntegrationRoutine():
 
         initial_ref_count = sys.getrefcount(kw_name)
 
-        _ = self.routine_to_test(test_func,0.0,1.0,(),kw_dict)
+        _ = self.routine_to_test(test_func,*self.default_range,(),kw_dict)
 
         self.assertEqual(initial_ref_count, sys.getrefcount(kw_name))
 
@@ -288,7 +287,7 @@ class TestFiniteIntevalIntegration():
         '''
         tests that the integral of exp(i x) ~ 0 over 1 period
         '''
-        result, err, norm = self.routine_to_test(lambda x: cmath.exp(1j*x), 0, 2*pi)
+        result, *_ = self.routine_to_test(lambda x: cmath.exp(1j*x), 0, 2*pi)
         self.assertAlmostEqual(result.real,0.0,places=self.tolerance)
         self.assertAlmostEqual(result.imag,0.0,places=self.tolerance)
 
@@ -296,7 +295,7 @@ class TestFiniteIntevalIntegration():
         '''
         checks that the integal of a simple quadratic function is correct
         '''
-        result, err , norm = self.routine_to_test(lambda x: 3*(x-1j)**2, 0.0,1.0)
+        result, *_ = self.routine_to_test(lambda x: 3*(x-1j)**2, 0.0,1.0)
         expected_result = ( (1-1j)**3 ) - ( (-1j)**3 )
         self.assertAlmostEqual(result.real,expected_result.real,places=self.tolerance)
         self.assertAlmostEqual(result.imag,expected_result.imag,places=self.tolerance)
@@ -310,7 +309,7 @@ class TestFiniteIntevalIntegration():
         def complicated_func(x):
             return math.exp(x) + 1j* math.exp(x**2)
 
-        result, err , norm = self.routine_to_test(complicated_func, 0, 5)
+        result, *_ = self.routine_to_test(complicated_func, 0, 5)
         self.assertGreater(result.real,0.0)
         self.assertGreater(result.imag,0.0)
 
@@ -322,6 +321,7 @@ class TestGaussKronrod(unittest.TestCase,
     def setUp(self):
         TestIntegrationRoutine.setUp(self)
         self.routine_to_test = kumquat.gauss_kronrod
+        self.default_range = (0.0,1.0)
 
 
 
