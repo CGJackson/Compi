@@ -1,6 +1,7 @@
 #include "kumquat.hpp"
 
 #include <complex>
+#include <unordered_map>
 #include <memory>
 
 #include <boost/math/quadrature/gauss_kronrod.hpp>
@@ -13,6 +14,16 @@
 extern "C" PyObject* gauss_kronrod(PyObject* self, PyObject* args){
     using std::complex;
     using namespace kumquat_internal;
+
+    // The posible tempates for the different allowed numbers of divisions are instasiated, so that the Python runtime can select which one to use
+    using IntegrationRoutine = complex<Real>(*)(IntegrandFunctionWrapper, Real, Real, unsigned, Real, Real*, Real*);
+
+    static const std::unordered_map<unsigned,IntegrationRoutine> integration_routines{{15,boost::math::quadrature::gauss_kronrod<Real,15>::integrate},
+                                                                                      {31,boost::math::quadrature::gauss_kronrod<Real,31>::integrate},
+                                                                                      {41,boost::math::quadrature::gauss_kronrod<Real,41>::integrate},
+                                                                                      {51,boost::math::quadrature::gauss_kronrod<Real,51>::integrate},
+                                                                                      {61,boost::math::quadrature::gauss_kronrod<Real,61>::integrate}
+                                                                                     };
 
     PyObject* integrand;
 
@@ -33,7 +44,7 @@ extern "C" PyObject* gauss_kronrod(PyObject* self, PyObject* args){
                 &extra_args,&extra_kw,&routine,&max_depth,&tolerance)){
         return NULL;
     }
-    
+
     std::unique_ptr<IntegrandFunctionWrapper> f;
     try{
         f = std::make_unique<IntegrandFunctionWrapper>(integrand,extra_args,extra_kw);
@@ -51,26 +62,10 @@ extern "C" PyObject* gauss_kronrod(PyObject* self, PyObject* args){
     Real err,l1;
 
     try{
-        switch(routine){//TODO there must be a better way...
-            case 15:
-                result = boost::math::quadrature::gauss_kronrod<Real,15>::integrate(*f,x_min,x_max,max_depth,tolerance,&err,&l1);
-                break;
-            case 31:
-                result = boost::math::quadrature::gauss_kronrod<Real,31>::integrate(*f,x_min,x_max,max_depth,tolerance,&err,&l1);
-                break;
-            case 41:
-                result = boost::math::quadrature::gauss_kronrod<Real,41>::integrate(*f,x_min,x_max,max_depth,tolerance,&err,&l1);
-                break;
-            case 51:
-                result = boost::math::quadrature::gauss_kronrod<Real,51>::integrate(*f,x_min,x_max,max_depth,tolerance,&err,&l1);
-                break;
-            case 61:
-                result = boost::math::quadrature::gauss_kronrod<Real,61>::integrate(*f,x_min,x_max,max_depth,tolerance,&err,&l1);
-                break;
-            default:
-                PyErr_SetString(PyExc_ValueError,"Invalid number of points for integrate");
-                return NULL;
-        }
+        result = integration_routines.at(routine)(*f,x_min,x_max,max_depth,tolerance,&err,&l1);
+    } catch (const std::out_of_range& e){
+        PyErr_SetString(PyExc_ValueError,"Invalid number of points for integrate");
+        return NULL;
     } catch( const unable_to_construct_py_object& e ){
         return NULL;
     } catch( const unable_to_form_arg_tuple& e ){
