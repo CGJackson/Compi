@@ -14,6 +14,7 @@ class TestIntegrationRoutine():
             raise NotImplementedError("A dumby routine has been called in place of a routine to be tested")
         self.routine_to_test = dumby_routine
         self.default_range = ()
+        self.positional_args = 0
         self.tolerance = 7 #number of dp
 
     # Test basic funcitonality
@@ -276,6 +277,21 @@ class TestIntegrationRoutine():
 
         self.assertEqual(initial_ref_count, sys.getrefcount(kw_name))
 
+    # Test integration routine parameters
+
+    def _accept_ketword_test(self, keyword, val):
+        def func(x):
+            return 1j
+
+        self.assertIsNotNone(self.routine_to_test(func,*self.default_range,None,None,**{keyword:val}))
+
+
+    def test_accept_tolerance_keyword(self):
+        self._accept_ketword_test('tolerance', 0.1)
+
+    def test_accept_max_levels_keyword(self):
+        self._accept_ketword_test('max_levels', 10)
+
 class TestFiniteIntevalIntegration():
     
     # Note the purpose of these tests is not to test the unerlying
@@ -324,7 +340,8 @@ class TestGaussKronrod(unittest.TestCase,
         self.default_range = (0.0,1.0)
 
 
-
+    def test_accept_ponts_parameter(self):
+        self._accept_ketword_test('points',15)
 
 if __name__ == '__main__':
     unittest.main()

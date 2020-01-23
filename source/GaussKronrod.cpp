@@ -39,9 +39,10 @@ extern "C" PyObject* gauss_kronrod(PyObject* self, PyObject* args){
 
     Real tolerance = boost::math::tools::root_epsilon<Real>();//TODO check if this is right
     
-    if(!PyArg_ParseTuple(args,"Odd|OOIId",
+    if(!PyArg_ParseTuple(args,"Odd|OO",
                 &integrand,&x_min,&x_max,
-                &extra_args,&extra_kw,&routine,&max_depth,&tolerance)){
+                &extra_args,&extra_kw)){
+                    //,&routine,&max_depth,&tolerance)){
         return NULL;
     }
 
