@@ -292,6 +292,23 @@ class TestIntegrationRoutine():
     def test_accept_max_levels_keyword(self):
         self._accept_ketword_test('max_levels', 10)
 
+    def test_max_levels_changes_result(self):
+        '''
+        Checks that the max_levels keyword is doing something by integrating a function which
+        *should* require many levels to integrate accurately with different values of 
+        max_levels and checking that they give a different result
+        '''
+        def difficult_function(x):
+            '''
+            A function that should require many levels to correctly numerically intergrate 
+            '''
+            return cmath.exp(-0.25*(x**2) + 8j*x)/(0.501-x)
+
+        bad_result,*_ = self.routine_to_test(difficult_function,*self.default_range,max_levels = 0)
+        good_result,*_ = self.routine_to_test(difficult_function,*self.default_range,max_levels = 10)
+
+        self.assertNotAlmostEqual(bad_result,good_result)
+
 class TestFiniteIntevalIntegration():
     
     # Note the purpose of these tests is not to test the unerlying
