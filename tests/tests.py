@@ -335,7 +335,7 @@ class TestIntegrationRoutine():
         def test_function(x):
             return 1j
 
-        result = self.routine_to_test(test_function,*self.default_range)
+        result = self.routine_to_test(test_function,*self.default_range, full_output=True)
 
         self.assertIsInstance(result,tuple)
         self.assertEqual(3,len(result))
