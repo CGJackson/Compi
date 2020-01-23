@@ -34,13 +34,15 @@ extern "C" PyObject* gauss_kronrod(PyObject* self, PyObject* args, PyObject* kwa
     unsigned max_depth = 15;
 
     Real tolerance = boost::math::tools::root_epsilon<Real>();//TODO check if this is right
-    
-    const char* keywords[] = {"","","","args", "kwargs","max_levels", "tolerance", "points", NULL}; 
 
-    if(!PyArg_ParseTupleAndKeywords(args,kwargs,"Odd|OO$IdI",const_cast<char**>(keywords),
+    bool full_output = false;
+    
+    const char* keywords[] = {"","","","args", "kwargs", "full_output","max_levels", "tolerance","points", NULL}; 
+
+    if(!PyArg_ParseTupleAndKeywords(args,kwargs,"Odd|OO$pIdI",const_cast<char**>(keywords),
                 &integrand,&x_min,&x_max,
                 &extra_args,&extra_kw
-                ,&max_depth,&tolerance,&routine)){
+                ,&full_output, &max_depth,&tolerance,&routine)){
         return NULL;
     }
 
@@ -85,5 +87,10 @@ extern "C" PyObject* gauss_kronrod(PyObject* self, PyObject* args, PyObject* kwa
     //TODO full output option?
     auto c_complex_result = c_complex_from_complex(result);
 
-    return Py_BuildValue("(Dff)",&c_complex_result,err,l1);
+    if(full_output){
+        return Py_BuildValue("(Df{sf})",&c_complex_result,err,"L1 norm",l1);
+    }
+    else{
+        return Py_BuildValue("(Df)",&c_complex_result,err);
+    }
 }
