@@ -3,7 +3,7 @@
 
 // Method Table
 static PyMethodDef KumquatMethods[] = {
-    {"gauss_kronrod", gauss_kronrod, METH_VARARGS,
+    {"gauss_kronrod", (PyCFunction) gauss_kronrod, METH_VARARGS | METH_KEYWORDS,
        "Performs gauss-kronrod integration"},
     {NULL,NULL,0,NULL}
 };

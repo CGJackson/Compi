@@ -13,7 +13,7 @@ extern "C" {
 #include "IntegrandFunctionWrapper.hpp"
 #include "utils.hpp"
 
-extern "C" PyObject* gauss_kronrod(PyObject* self, PyObject* args){
+extern "C" PyObject* gauss_kronrod(PyObject* self, PyObject* args, PyObject* kwargs){
     using std::complex;
     using namespace kumquat_internal;
 
@@ -41,10 +41,12 @@ extern "C" PyObject* gauss_kronrod(PyObject* self, PyObject* args){
 
     Real tolerance = boost::math::tools::root_epsilon<Real>();//TODO check if this is right
     
-    if(!PyArg_ParseTuple(args,"Odd|OO",
+    char* keywords[] = {"","","","args", "kwargs","max_levels", "tolerance", "points", NULL}; 
+
+    if(!PyArg_ParseTupleAndKeywords(args,kwargs,"Odd|OO$IdI",keywords,
                 &integrand,&x_min,&x_max,
-                &extra_args,&extra_kw)){
-                    //,&routine,&max_depth,&tolerance)){
+                &extra_args,&extra_kw
+                ,&max_depth,&tolerance,&routine)){
         return NULL;
     }
 

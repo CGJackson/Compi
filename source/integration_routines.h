@@ -3,6 +3,6 @@
 
 #include "kumquat.hpp"
 
-PyObject* gauss_kronrod(PyObject* self, PyObject* args);
+PyObject* gauss_kronrod(PyObject* self, PyObject* args, PyObject* kwargs);
 
 #endif
