@@ -17,7 +17,7 @@ extern "C" PyObject* gauss_kronrod(PyObject* self, PyObject* args, PyObject* kwa
     using std::complex;
     using namespace kumquat_internal;
 
-    // The posible tempates for the different allowed numbers of divisions are instasiated, so that the Python runtime can select which one to use
+    // The possible tempates for the different allowed numbers of divisions are instasiated, so that the Python runtime can select which one to use
     using IntegrationRoutine = complex<Real>(*)(IntegrandFunctionWrapper, Real, Real, unsigned, Real, Real*, Real*);
 
     static const std::unordered_map<unsigned,IntegrationRoutine> integration_routines{{15,boost::math::quadrature::gauss_kronrod<Real,15>::integrate},
@@ -81,7 +81,7 @@ extern "C" PyObject* gauss_kronrod(PyObject* self, PyObject* args, PyObject* kwa
         return NULL;
     }
 
-    //TODO do something with L1 norm 
+    //TODO full output option?
     auto c_complex_result = c_complex_from_complex(result);
 
     return Py_BuildValue("(Dff)",&c_complex_result,err,l1);
