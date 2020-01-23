@@ -409,5 +409,16 @@ class TestGaussKronrod(unittest.TestCase,
 
         self.assertNotAlmostEqual(bad_result,good_result,places=self.tolerance)
 
+    def test_full_output_contains_L1_norm_abscissa_and_weights(self):
+        def func(x):
+            return 1j
+
+        _,_,diagnostics = self.routine_to_test(func,*self.default_range,full_output=True)
+
+        self.assertSetEqual({"L1 norm", "abscissa", "weights"}, set(diagnostics.keys()))
+        self.assertIsInstance(diagnostics["L1 norm"], float)
+        self.assertIsInstance(diagnostics["abscissa"][0], float)
+        self.assertIsInstance(diagnostics["weights"][0], float)
+
 if __name__ == '__main__':
     unittest.main()
