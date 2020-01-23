@@ -27,17 +27,16 @@ class TestIntegrationRoutine():
 
         self.assertIsNotNone(result)
 
-    def test_return_complex_float_float_triple(self):
+    def test_return_complex_float_pair(self):
         def test_function(x):
             return 1j
 
         result = self.routine_to_test(test_function,*self.default_range)
 
         self.assertIsInstance(result,tuple)
-        self.assertEqual(3,len(result))
+        self.assertEqual(2,len(result))
         self.assertIsInstance(result[0],complex)
         self.assertIsInstance(result[1],float)
-        self.assertIsInstance(result[2],float)
 
     def test_runs_with_lambda_function(self):
         test_function = lambda x: 1j
@@ -327,6 +326,22 @@ class TestIntegrationRoutine():
         bad_result,*_ = self.routine_to_test(easy_function,*self.default_range,max_levels = 0)
         good_result,*_ = self.routine_to_test(easy_function,*self.default_range,max_levels = 10)
         self.assertAlmostEqual(good_result,bad_result,places=self.tolerance)
+
+    def test_accept_full_output_keyword(self):
+        self._accept_ketword_test('full_output',True)
+        self._accept_ketword_test('full_output',False)
+
+    def test_full_output_adds_dict_to_result(self):
+        def test_function(x):
+            return 1j
+
+        result = self.routine_to_test(test_function,*self.default_range)
+
+        self.assertIsInstance(result,tuple)
+        self.assertEqual(3,len(result))
+        self.assertIsInstance(result[0],complex)
+        self.assertIsInstance(result[1],float)
+        self.assertIsInstance(result[1],dict)
 
 class TestFiniteIntevalIntegration():
     
