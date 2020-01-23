@@ -20,12 +20,6 @@ extern "C" PyObject* gauss_kronrod(PyObject* self, PyObject* args, PyObject* kwa
     // The possible tempates for the different allowed numbers of divisions are instasiated, so that the Python runtime can select which one to use
     using IntegrationRoutine = complex<Real>(*)(IntegrandFunctionWrapper, Real, Real, unsigned, Real, Real*, Real*);
 
-    static const std::unordered_map<unsigned,IntegrationRoutine> integration_routines{{15,boost::math::quadrature::gauss_kronrod<Real,15>::integrate},
-                                                                                      {31,boost::math::quadrature::gauss_kronrod<Real,31>::integrate},
-                                                                                      {41,boost::math::quadrature::gauss_kronrod<Real,41>::integrate},
-                                                                                      {51,boost::math::quadrature::gauss_kronrod<Real,51>::integrate},
-                                                                                      {61,boost::math::quadrature::gauss_kronrod<Real,61>::integrate}
-                                                                                     };
 
     PyObject* integrand;
 
@@ -62,6 +56,13 @@ extern "C" PyObject* gauss_kronrod(PyObject* self, PyObject* args, PyObject* kwa
     } catch( const kwargs_given_not_dict& e){
         return NULL;
     } 
+
+    static const std::unordered_map<unsigned,IntegrationRoutine> integration_routines{{15,boost::math::quadrature::gauss_kronrod<Real,15>::integrate},
+                                                                                      {31,boost::math::quadrature::gauss_kronrod<Real,31>::integrate},
+                                                                                      {41,boost::math::quadrature::gauss_kronrod<Real,41>::integrate},
+                                                                                      {51,boost::math::quadrature::gauss_kronrod<Real,51>::integrate},
+                                                                                      {61,boost::math::quadrature::gauss_kronrod<Real,61>::integrate}
+                                                                                     };
 
     complex<Real> result;
     Real err,l1;
