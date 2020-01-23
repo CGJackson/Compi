@@ -296,7 +296,10 @@ class TestIntegrationRoutine():
         '''
         Checks that the max_levels keyword is doing something by integrating a function which
         *should* require many levels to integrate accurately with different values of 
-        max_levels and checking that they give a different result
+        max_levels and checking that they give a different result.
+
+        Also checks that the result of an 'easy' function, that should not requite many levels
+        to integrate, is not changed
         '''
         def difficult_function(x):
             '''
@@ -308,6 +311,13 @@ class TestIntegrationRoutine():
         good_result,*_ = self.routine_to_test(difficult_function,*self.default_range,max_levels = 10)
 
         self.assertNotAlmostEqual(bad_result,good_result)
+
+        def easy_function(x):
+            return 1j
+
+        bad_result,*_ = self.routine_to_test(easy_function,*self.default_range,max_levels = 0)
+        good_result,*_ = self.routine_to_test(easy_function,*self.default_range,max_levels = 10)
+        self.assertEqual(good_result,bad_result)
 
 class TestFiniteIntevalIntegration():
     
