@@ -341,7 +341,7 @@ class TestIntegrationRoutine():
         self.assertEqual(3,len(result))
         self.assertIsInstance(result[0],complex)
         self.assertIsInstance(result[1],float)
-        self.assertIsInstance(result[1],dict)
+        self.assertIsInstance(result[2],dict)
 
 class TestFiniteIntevalIntegration():
     
