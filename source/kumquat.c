@@ -1,5 +1,5 @@
 #include "kumquat.hpp"
-#include "integration_routines.hpp"
+#include "integration_routines.h"
 
 // Method Table
 static PyMethodDef KumquatMethods[] = {
@@ -8,7 +8,7 @@ static PyMethodDef KumquatMethods[] = {
     {NULL,NULL,0,NULL}
 };
 
-char * kumquat_docs = NULL;
+char * const kumquat_docs = NULL;
 
 // Module definition Structure
 static struct PyModuleDef KumquatModule = {

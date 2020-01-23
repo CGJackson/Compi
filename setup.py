@@ -76,7 +76,7 @@ setup(name='Kumquat',
       author='Conor Jackson',
       author_email='conorgjackson@gmail.com',
       url='https://github.com/CGJackson/Kumquat',
-      ext_modules=[Extension('kumquat',[src+f for f in ('kumquat.cpp',
+      ext_modules=[Extension('kumquat',[src+f for f in ('kumquat.c',
                                             'GaussKronrod.cpp',
                                             'IntegrandFunctionWrapper.cpp')],
 

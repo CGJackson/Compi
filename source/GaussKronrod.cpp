@@ -7,7 +7,9 @@
 #include <boost/math/quadrature/gauss_kronrod.hpp>
 #include <boost/math/tools/precision.hpp>
 
-#include "integration_routines.hpp"
+extern "C" {
+    #include "integration_routines.h"
+}
 #include "IntegrandFunctionWrapper.hpp"
 #include "utils.hpp"
 
