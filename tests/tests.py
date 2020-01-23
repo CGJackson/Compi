@@ -379,5 +379,20 @@ class TestGaussKronrod(unittest.TestCase,
     def test_accept_ponts_parameter(self):
         self._accept_ketword_test('points',15)
 
+    def test_invalid_number_of_points_raises_ValueError(self):
+        def func(x):
+            return 1j
+
+        self.assertRaises(ValueError, self.routine_to_test,func,*self.default_range,points=17)
+
+    def test_points_changes_result(self):
+        def difficult_function(x):
+            return (0.501+0.00000001j -x)**(-1.5)
+
+        bad_result,*_= self.routine_to_test(difficult_function,*self.default_range,max_levels=1, points=15)
+        good_result,*_ = self.routine_to_test(difficult_function,*self.default_range,max_levels=1, points=61)
+
+        self.assertNotAlmostEqual(bad_result,good_result,places=self.tolerance)
+
 if __name__ == '__main__':
     unittest.main()
