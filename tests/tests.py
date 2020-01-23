@@ -289,6 +289,15 @@ class TestIntegrationRoutine():
     def test_accept_tolerance_keyword(self):
         self._accept_ketword_test('tolerance', 0.1)
 
+    def test_changing_tolerance_chages_result(self):
+        def difficult_function(x):
+            return (0.501+0.00000001j -x)**(-1.5)
+
+        loose_result,*_ = self.routine_to_test(difficult_function,*self.default_range,tolerance=0.1)
+        tight_result,*_ = self.routine_to_test(difficult_function,*self.default_range,tolerance=1e-10)
+
+        self.assertNotAlmostEqual(loose_result,tight_result,places=self.tolerance)
+
     def test_accept_max_levels_keyword(self):
         self._accept_ketword_test('max_levels', 10)
 
@@ -310,14 +319,14 @@ class TestIntegrationRoutine():
         bad_result,*_ = self.routine_to_test(difficult_function,*self.default_range,max_levels = 0)
         good_result,*_ = self.routine_to_test(difficult_function,*self.default_range,max_levels = 10)
 
-        self.assertNotAlmostEqual(bad_result,good_result)
+        self.assertNotAlmostEqual(bad_result,good_result, places=self.tolerance)
 
         def easy_function(x):
             return 1j
 
         bad_result,*_ = self.routine_to_test(easy_function,*self.default_range,max_levels = 0)
         good_result,*_ = self.routine_to_test(easy_function,*self.default_range,max_levels = 10)
-        self.assertEqual(good_result,bad_result)
+        self.assertAlmostEqual(good_result,bad_result,places=self.tolerance)
 
 class TestFiniteIntevalIntegration():
     
