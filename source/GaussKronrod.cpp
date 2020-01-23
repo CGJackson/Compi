@@ -13,13 +13,16 @@ extern "C" {
 #include "IntegrandFunctionWrapper.hpp"
 #include "utils.hpp"
 
+// Integrates a Python function returning a complex over a finite interval using
+// Gauss-Kronrod adaptive quadrature
 extern "C" PyObject* gauss_kronrod(PyObject* self, PyObject* args, PyObject* kwargs){
     using std::complex;
     using namespace kumquat_internal;
 
-    // The possible tempates for the different allowed numbers of divisions are instasiated, so that the Python runtime can select which one to use
     using IntegrationRoutine = complex<Real>(*)(IntegrandFunctionWrapper, Real, Real, unsigned, Real, Real*, Real*);
 
+
+    // The input Python Objects are parsed into c variables
 
     PyObject* integrand;
 
@@ -46,6 +49,8 @@ extern "C" PyObject* gauss_kronrod(PyObject* self, PyObject* args, PyObject* kwa
         return NULL;
     }
 
+    // C++ wrapper for Python integrand funciton is constructed
+
     std::unique_ptr<IntegrandFunctionWrapper> f;
     try{
         f = std::make_unique<IntegrandFunctionWrapper>(integrand,extra_args,extra_kw);
@@ -59,6 +64,10 @@ extern "C" PyObject* gauss_kronrod(PyObject* self, PyObject* args, PyObject* kwa
         return NULL;
     } 
 
+    // The actual integration routine is run
+
+        // The possible tempates for the different allowed numbers of divisions are instasiated, 
+        // so that the Python runtime can select which one to use
     static const std::unordered_map<unsigned,IntegrationRoutine> integration_routines{{15,boost::math::quadrature::gauss_kronrod<Real,15>::integrate},
                                                                                       {31,boost::math::quadrature::gauss_kronrod<Real,31>::integrate},
                                                                                       {41,boost::math::quadrature::gauss_kronrod<Real,41>::integrate},
@@ -84,10 +93,12 @@ extern "C" PyObject* gauss_kronrod(PyObject* self, PyObject* args, PyObject* kwa
         return NULL;
     }
 
-    //TODO full output option?
+
+    // The results are parsed back to Python Objects 
     auto c_complex_result = c_complex_from_complex(result);
 
     if(full_output){
+        // TODO refine full_output
         return Py_BuildValue("(Df{sf})",&c_complex_result,err,"L1 norm",l1);
     }
     else{
