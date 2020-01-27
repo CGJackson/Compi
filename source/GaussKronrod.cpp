@@ -2,7 +2,7 @@
 
 #include <complex>
 #include <unordered_map>
-#include <memory>
+#include <utility>
 
 #include <boost/math/quadrature/gauss_kronrod.hpp>
 #include <boost/math/tools/precision.hpp>
@@ -12,6 +12,21 @@ extern "C" {
 }
 #include "IntegrandFunctionWrapper.hpp"
 #include "utils.hpp"
+
+
+template<unsigned points>
+std::pair<PyObject*, PyObject*> get_abscissa_and_weights(){
+    auto abscissa = kumquat_internal::py_list_from_real_container(boost::math::quadrature::gauss_kronrod<Real,points>::abscissa());
+    if(abscissa == NULL){
+        return std::make_pair<PyObject*,PyObject*>(NULL,NULL);
+    }
+    auto weights = kumquat_internal::py_list_from_real_container(boost::math::quadrature::gauss_kronrod<Real,points>::weights());
+    if(weights == NULL){
+        Py_DECREF(abscissa);
+        return std::make_pair<PyObject*,PyObject*>(NULL,NULL);
+    }
+    return std::make_pair(abscissa,weights);
+}
 
 // Integrates a Python function returning a complex over a finite interval using
 // Gauss-Kronrod adaptive quadrature
@@ -78,6 +93,8 @@ extern "C" PyObject* gauss_kronrod(PyObject* self, PyObject* args, PyObject* kwa
     complex<Real> result;
     Real err,l1;
 
+
+
     try{
         result = integration_routines.at(routine)(*f,x_min,x_max,max_depth,tolerance,&err,&l1);
     } catch (const std::out_of_range& e){
@@ -98,8 +115,34 @@ extern "C" PyObject* gauss_kronrod(PyObject* self, PyObject* args, PyObject* kwa
     auto c_complex_result = c_complex_from_complex(result);
 
     if(full_output){
-        // TODO refine full_output
-        return Py_BuildValue("(Df{sf})",&c_complex_result,err,"L1 norm",l1);
+
+        std::pair<PyObject*,PyObject*> abscissa_and_weights;
+        switch(routine){
+            case 15:
+                abscissa_and_weights = get_abscissa_and_weights<15>();
+                break;
+            case 31:
+                abscissa_and_weights = get_abscissa_and_weights<31>();
+                break;
+            case 41:
+                abscissa_and_weights = get_abscissa_and_weights<41>();
+                break;
+            case 51:
+                abscissa_and_weights = get_abscissa_and_weights<51>();
+                break;
+            case 61:
+                abscissa_and_weights = get_abscissa_and_weights<61>();
+                break;
+            default:
+                PyErr_SetString(PyExc_NotImplementedError,"Unable to generate abscissa and weights for the given number of points.\nPlease report this bug");
+                return NULL;
+        }
+
+        if(abscissa_and_weights == std::pair<PyObject*,PyObject*>(NULL,NULL)){
+            return NULL;
+        }
+
+        return Py_BuildValue("(Df{sfsOsO})",&c_complex_result,err,"L1 norm",l1,"abscissa",abscissa_and_weights.first,"weights",abscissa_and_weights.second);
     }
     else{
         return Py_BuildValue("(Df)",&c_complex_result,err);

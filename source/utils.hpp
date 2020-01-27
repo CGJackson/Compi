@@ -2,6 +2,7 @@
 #define KUMQUAT_UTILS_GUARD
 #include "kumquat.hpp"
 #include <complex>
+#include <vector>
 
 namespace kumquat_internal {
 
@@ -37,6 +38,39 @@ inline PyObject* copy_py_tuple(PyObject* tup){
     }
 
     return new_tup;
+}
+
+template<typename RandomAccessContainer> 
+PyObject* py_list_from_real_container(const RandomAccessContainer& arr){
+    using obj_vector = std::vector<PyObject*>;
+    using ov_size_t = object_vector::size_type;
+
+    // Generate python list elements in advance, so that any errors can be dealt with
+    // before the list is constructed
+    obj_vector py_elements{};
+    py_elements.reserve(arr.size());
+    for(auto it = arr.cbegin(); it != arr.cend(); ++it){
+        py_elements.emplace_back(PyFloat_FromDouble(*it));
+        if(py_elements.back() == NULL){
+            for(ov_size_t i = 0; i < static_cast<ov_size_t>(it - arr.cbegin()); ++i){
+                Py_DECREF(py_elements[i]);
+            }
+            return NULL;
+        }
+    }
+
+    const Py_ssize_t arr_ssize = static_cast<Py_ssize_t>(arr.size());
+
+    PyObject* result_list = PyList_New(arr_ssize);
+    if( result_list == NULL){
+        return NULL;
+    }
+
+    for(Py_ssize_t i = 0; i < arr_ssize; ++i){
+        PyList_SET_ITEM(result_list,i,py_elements[i]);
+    }
+    
+    return result_list;
 }
 
 }
