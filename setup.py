@@ -72,7 +72,7 @@ print(f"Using " + boost_path + " as boost location\n")
 src = 'source/'
 
 setup(name='Kumquat',
-      version='0.2',
+      version='0.3',
       author='Conor Jackson',
       author_email='conorgjackson@gmail.com',
       url='https://github.com/CGJackson/Kumquat',
