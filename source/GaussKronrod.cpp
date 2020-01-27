@@ -116,6 +116,12 @@ extern "C" PyObject* gauss_kronrod(PyObject* self, PyObject* args, PyObject* kwa
 
     if(full_output){
 
+        // The boost API returning the abscissa and weights simply spesifies that
+        // they are returned as a (reference to a) random access container. 
+        // Since this could (reasonably) depend on points (e.g. array<Real,points>)
+        // it is awkward to use the map based appraoch used for calling the routine
+        // and instead we use more verbose a template/switch based approach
+
         std::pair<PyObject*,PyObject*> abscissa_and_weights;
         switch(routine){
             case 15:
@@ -134,6 +140,7 @@ extern "C" PyObject* gauss_kronrod(PyObject* self, PyObject* args, PyObject* kwa
                 abscissa_and_weights = get_abscissa_and_weights<61>();
                 break;
             default:
+                // Should never get here as have already checked the value of points is valid 
                 PyErr_SetString(PyExc_NotImplementedError,"Unable to generate abscissa and weights for the given number of points.\nPlease report this bug");
                 return NULL;
         }
