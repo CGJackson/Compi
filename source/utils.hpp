@@ -43,7 +43,7 @@ inline PyObject* copy_py_tuple(PyObject* tup){
 template<typename RandomAccessContainer> 
 PyObject* py_list_from_real_container(const RandomAccessContainer& arr){
     using obj_vector = std::vector<PyObject*>;
-    using ov_size_t = object_vector::size_type;
+    using ov_size_t = obj_vector::size_type;
 
     // Generate python list elements in advance, so that any errors can be dealt with
     // before the list is constructed
