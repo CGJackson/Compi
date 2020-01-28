@@ -420,5 +420,23 @@ class TestGaussKronrod(unittest.TestCase,
         self.assertIsInstance(diagnostics["abscissa"][0], float)
         self.assertIsInstance(diagnostics["weights"][0], float)
 
+class TestTanhSinh(unittest.TestCase,
+                TestIntegrationRoutine,
+                TestFiniteIntevalIntegration):
+    def setUp(self):
+        TestIntegrationRoutine.setUp()
+        self.routine_to_test = kumquat.tanh_sinh
+        self.default_range = (-1.0,1.0)
+
+    def test_full_output_contains_L1_norm_levels(self):
+        def func(x):
+            return 1j
+
+        _,_,diagnostics = self.routine_to_test(func,*self.default_range,full_output=True)
+
+        self.assertSetEqual({"L1 norm", "levels"}, set(diagnostics.keys()))
+        self.assertIsInstance(diagnostics["L1 norm"], float)
+        self.assertIsInstance(diagnostics["levels"], int)
+
 if __name__ == '__main__':
     unittest.main()
