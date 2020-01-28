@@ -41,21 +41,21 @@ Performs Gauss-Kronrod adaptive quadrature on a finite interval.
 #### Parameters
 | Name | Type | Description|
 |---|---|---|
-|`f`   |Callable| Function to be integrated. Must take a point in the integration range as a float in its first argument and return a complex. Additional arguments can be passed to f via the args and kwargs parameters|
+|`f`   |Callable| Function to be integrated. Must take a point in the integration range as a `float` in its first argument and return a `complex`. Additional arguments can be passed to `f` via the `args` and `kwargs` parameters|
 |`a`  | `float` |Lower limit of integration|
-|`b`  | `float`| Upper limit of integration. Must be strictly greater than a|
+|`b`  | `float`| Upper limit of integration. Must be strictly greater than `a`|
     
 #### Optional Parameters
 | Name | Type | Default | Description |
 | -----|------|---------|-------------|
-|`args`|    `tuple`| `None`| Additional positional arguments to be passed to f. The position in the integration region must still be the first argument of f.|
-|`kwargs`| `dict`| `None` | Additional keyword arguments to be passed to f|
+|`args`|    `tuple`| `None`| Additional positional arguments to be passed to `f`. The position in the integration region must still be the first argument of f.|
+|`kwargs`| `dict`| `None` | Additional keyword arguments to be passed to `f`|
     
 #### Keyword Parameters
 | Name | Type | Default | Description |
 | -----|------|---------|-------------|
-|`full_output`| `bool`| `False`|If true returns a dict containing additional infomation about the integration performed, in addition to the result and error estemate. This dict contains an elstemate of the L1 norm of f, a list of the abscissa used in the integration, and a list of the weights used in the integration.|
-|`max_levels`| `int`| 15 |The maximum number of levels of adaptive quadrature to be used in the integration. Set to 0 for non-adaptive quadrature.|
-|`tolarence`| `float`| square root of machine epsilon |The maximum relative error in the result. Should not be set too close to machine precision, Default sqrt of machine precision|
-|`points`| `int`, must be in `{15,31,41,51,61}`| 31 | Number of points being used in each level of Gaussian quadrature.|
+|`full_output`| `bool`| `False`|If true returns a dict containing additional infomation about the integration performed, in addition to the result and error estemate. This dict contains an estimate of the L1 norm of `f`, a list of the abscissa used in the integration, and a list of the weights used in the integration.|
+|`max_levels`| `int`| `15` |The maximum number of levels of adaptive quadrature to be used in the integration. Set to `0` for non-adaptive quadrature.|
+|`tolarence`| `float`| square root of machine epsilon |The maximum relative error in the result. Should not be set too close to machine precision.|
+|`points`| `int`, must be in `{15,31,41,51,61}`| `31` | Number of points being used in each level of Gaussian quadrature.|
 
