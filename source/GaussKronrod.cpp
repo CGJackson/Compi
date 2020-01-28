@@ -55,7 +55,7 @@ extern "C" PyObject* gauss_kronrod(PyObject* self, PyObject* args, PyObject* kwa
 
     bool full_output = false;
     
-    const char* keywords[] = {"","","","args", "kwargs", "full_output","max_levels", "tolerance","points", NULL}; 
+    const char* keywords[] = {"f","a","b","args", "kwargs", "full_output","max_levels", "tolerance","points", NULL}; 
 
     if(!PyArg_ParseTupleAndKeywords(args,kwargs,"Odd|OO$pIdI",const_cast<char**>(keywords),
                 &integrand,&x_min,&x_max,
