@@ -16,7 +16,7 @@ $ python setup.py
 
 Kumquat requires C++ boost to be installed. If the setup script is unable to locate the required header files, it will ask for a filepath to their location. The latest version of Boost can be found at [https://www.boost.org/].
 
-## Integratio Routines
+## Integration Routines
 
 ### gauss_kronrod
 
