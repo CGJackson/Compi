@@ -23,19 +23,18 @@ struct GaussKronrodParameters: public RoutineParametersBase{
     Real x_max;
     unsigned points = 31;
 
-    GaussKronrodParameters(PyObject* args, PyObject* kwargs){
+    GaussKronrodParameters(PyObject* routine_args, PyObject* routine_kwargs){
         std::vector<const char*> keywords{standard_keywords};
         keywords.insert(keywords.begin()+1,{"a","b"});
         keywords.push_back("points");
         keywords.push_back(NULL);
 
-    if(!PyArg_ParseTupleAndKeywords(args,kwargs,"Odd|OO$pIdI",const_cast<char**>(keywords.data()),
+        if(!PyArg_ParseTupleAndKeywords(routine_args,routine_kwargs,"Odd|OO$pIdI",const_cast<char**>(keywords.data()),
                 &integrand,&x_min,&x_max,
                 &args,&kw,
                 &full_output, &max_levels,&tolerance,&points)){
-        throw could_not_parse_arguments("Unable to parse python arguments to C variables");
-    }
-
+            throw could_not_parse_arguments("Unable to parse python arguments to C variables");
+        }
     }
 
 };
