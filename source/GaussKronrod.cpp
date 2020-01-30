@@ -16,19 +16,7 @@ extern "C" {
 #include "utils.hpp"
 
 
-template<unsigned points>
-std::pair<PyObject*, PyObject*> get_abscissa_and_weights(){
-    auto abscissa = kumquat_internal::py_list_from_real_container(boost::math::quadrature::gauss_kronrod<Real,points>::abscissa());
-    if(abscissa == NULL){
-        return std::make_pair<PyObject*,PyObject*>(NULL,NULL);
-    }
-    auto weights = kumquat_internal::py_list_from_real_container(boost::math::quadrature::gauss_kronrod<Real,points>::weights());
-    if(weights == NULL){
-        Py_DECREF(abscissa);
-        return std::make_pair<PyObject*,PyObject*>(NULL,NULL);
-    }
-    return std::make_pair(abscissa,weights);
-}
+
 
 struct GaussKronrodParameters: public RoutineParametersBase{
     Real x_min;
@@ -78,6 +66,20 @@ GaussKronrodParameters::result_type run_integration_routine(const kumquat_intern
     }
 
     return result;
+}
+
+template<unsigned points>
+std::pair<PyObject*, PyObject*> get_abscissa_and_weights(){
+    auto abscissa = kumquat_internal::py_list_from_real_container(boost::math::quadrature::gauss_kronrod<Real,points>::abscissa());
+    if(abscissa == NULL){
+        return std::make_pair<PyObject*,PyObject*>(NULL,NULL);
+    }
+    auto weights = kumquat_internal::py_list_from_real_container(boost::math::quadrature::gauss_kronrod<Real,points>::weights());
+    if(weights == NULL){
+        Py_DECREF(abscissa);
+        return std::make_pair<PyObject*,PyObject*>(NULL,NULL);
+    }
+    return std::make_pair(abscissa,weights);
 }
 
 PyObject* generate_full_output_dict(const GaussKronrodParameters::result_type& result, const GaussKronrodParameters& parameters){
