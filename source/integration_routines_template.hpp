@@ -92,10 +92,10 @@ PyObject* integration_routine(PyObject* args, PyObject* kwargs){
         if(!full_output_dict){
             return NULL;
         }
-        return Py_BuildValue("(DdO)", c_complex_result, result.err,full_output_dict);
+        return Py_BuildValue("(DdO)", &c_complex_result, result.err,full_output_dict);
     }
     else{
-        return Py_BuildValue("(Dd)", c_complex_result,result.err);
+        return Py_BuildValue("(Dd)", &c_complex_result,result.err);
     }
 
 }
