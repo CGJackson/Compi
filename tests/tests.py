@@ -424,7 +424,7 @@ class TestTanhSinh(unittest.TestCase,
                 TestIntegrationRoutine,
                 TestFiniteIntevalIntegration):
     def setUp(self):
-        TestIntegrationRoutine.setUp()
+        TestIntegrationRoutine.setUp(self)
         self.routine_to_test = kumquat.tanh_sinh
         self.default_range = (-1.0,1.0)
 
