@@ -25,7 +25,6 @@ struct GaussKronrodParameters: public RoutineParametersBase{
 
     GaussKronrodParameters(PyObject* args, PyObject* kwargs){
         std::vector<const char*> keywords{standard_keywords};
-        keywords.resize(keywords.size()+4);
         keywords.insert(keywords.begin()+1,{"a","b"});
         keywords.push_back("points");
         keywords.push_back(NULL);
