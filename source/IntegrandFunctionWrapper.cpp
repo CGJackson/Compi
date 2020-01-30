@@ -4,6 +4,7 @@
 #include <utility>
 #include <vector>
 #include <stdexcept>
+#include <iostream>
 
 #include "IntegrandFunctionWrapper.hpp"
 #include "utils.hpp"
@@ -78,11 +79,12 @@ IntegrandFunctionWrapper::IntegrandFunctionWrapper(PyObject * func,
 
     if(!PyTuple_Check(new_args)){
         Py_DECREF(callback);
-        Py_DECREF(kwargs);
+        Py_XDECREF(kwargs);
         throw arg_list_not_tuple("The argument list given to IntegrandFunctionWrapper was not a Python Tuple", "The extra arguments passed to the function wrapper were not a valid python tuple");
     }
         
     const Py_ssize_t extra_arg_count = PyTuple_GET_SIZE(new_args);
+    std::cerr << extra_arg_count << ' ';
     if(extra_arg_count >= PY_SSIZE_T_MAX){
         PyErr_SetString(PyExc_TypeError,"Too many arguments provided to integrand function");
         Py_DECREF(callback);
