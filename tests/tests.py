@@ -290,9 +290,9 @@ class TestIntegrationRoutine():
 
     def test_changing_tolerance_chages_result(self):
         def difficult_function(x):
-            return (0.501+0.00000001j -x)**(-1.5)
+            return ((0.501+0.00000001j -x)**(-1.5))*cmath.exp(20j*x)
 
-        loose_result,*_ = self.routine_to_test(difficult_function,*self.default_range,tolerance=0.1)
+        loose_result,*_ = self.routine_to_test(difficult_function,*self.default_range,tolerance=1.0)
         tight_result,*_ = self.routine_to_test(difficult_function,*self.default_range,tolerance=1e-10)
 
         self.assertNotAlmostEqual(loose_result,tight_result,places=self.tolerance)
