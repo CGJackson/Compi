@@ -7,6 +7,8 @@
 static PyMethodDef KumquatMethods[] = {
     {"gauss_kronrod", (PyCFunction) gauss_kronrod, METH_VARARGS | METH_KEYWORDS,
     GAUSS_KRONROD_DOCS },
+    {"tanh_sinh", (PyCFunction) tanh_sinh, METH_VARARGS | METH_KEYWORDS,
+    NULL},
     {NULL,NULL,0,NULL}
 };
 

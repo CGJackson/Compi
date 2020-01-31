@@ -25,7 +25,7 @@ struct TanhSinhParameters: public RoutineParametersBase {
         std::copy(standard_keywords.cbegin()+1, standard_keywords.end(),keywords_it);
         keywords.back() = NULL;
 
-        if(!PyArg_ParseTupleAndKeywords(routine_args,routine_kwargs,"Odd|OO$IdI",const_cast<char**>(keywords.data()),
+        if(!PyArg_ParseTupleAndKeywords(routine_args,routine_kwargs,"Odd|OO$pId",const_cast<char**>(keywords.data()),
                 &integrand,&x_min,&x_max,
                 &args,&kw,
                 &full_output, &max_levels,&tolerance)){
@@ -34,12 +34,12 @@ struct TanhSinhParameters: public RoutineParametersBase {
     }
 
     struct result_type:public RoutineParametersBase::result_type {
-        unsigned levels;
+        size_t levels;
     };
 };
 
 TanhSinhParameters::result_type run_integration_routine(const kumquat_internal::IntegrandFunctionWrapper& f,const TanhSinhParameters& parameters){
-    auto integrator = boost::math::quadrature::tanh_sinh(static_cast<size_t>(parameters.max_levels));
+    auto integrator = boost::math::quadrature::tanh_sinh<Real>(static_cast<size_t>(parameters.max_levels));
     TanhSinhParameters::result_type result;
 
     result.result =  integrator.integrate(f,parameters.x_min,parameters.x_max,parameters.tolerance,&(result.err),&(result.l1),&(result.levels));
