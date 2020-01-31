@@ -2,6 +2,7 @@
 
 #include <complex>
 #include <unordered_map>
+#include <algorithm>
 #include <utility>
 
 #include <boost/math/quadrature/gauss_kronrod.hpp>
@@ -26,15 +27,12 @@ struct GaussKronrodParameters: public RoutineParametersBase{
     GaussKronrodParameters(PyObject* routine_args, PyObject* routine_kwargs){
         std::array<const char*,standard_keywords.size()+4> keywords;
         auto keyword_it = keywords.begin();
-        auto standard_keyword_it = standard_keywords.cbegin();
-        *keyword_it++ = *standard_keyword_it++;
+        *keyword_it++ = standard_keywords[0];
         *keyword_it++ = "a";
         *keyword_it++ = "b";
-        for(;standard_keyword_it != standard_keywords.cend(); ++keyword_it,++standard_keyword_it){
-            *keyword_it = *standard_keyword_it;
-        }
-        *keyword_it++ = "points";
-        *keyword_it++ = NULL;
+        std::copy(standard_keywords.cbegin()+1,standard_keywords.cend(),keyword_it);
+        keywords[keywords.size()-2] = "points";
+        keywords[keywords.size()-1] = NULL;
 
         if(!PyArg_ParseTupleAndKeywords(routine_args,routine_kwargs,"Odd|OO$pIdI",const_cast<char**>(keywords.data()),
                 &integrand,&x_min,&x_max,
