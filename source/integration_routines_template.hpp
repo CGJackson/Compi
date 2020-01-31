@@ -3,7 +3,7 @@
 
 #include "kumquat.hpp"
 
-#include <vector>
+#include <array>
 #include <complex>
 #include <utility>
 #include <stdexcept>
@@ -13,7 +13,7 @@
 #include "IntegrandFunctionWrapper.hpp"
 #include "utils.hpp"
 
-const std::vector<const char*> standard_keywords{"f","args", "kwargs", "full_output","max_levels", "tolerance"};
+constexpr std::array<const char*,6> standard_keywords{"f","args", "kwargs", "full_output","max_levels", "tolerance"};
 
 struct RoutineParametersBase{
     PyObject* integrand;

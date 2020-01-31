@@ -24,10 +24,17 @@ struct GaussKronrodParameters: public RoutineParametersBase{
     unsigned points = 31;
 
     GaussKronrodParameters(PyObject* routine_args, PyObject* routine_kwargs){
-        std::vector<const char*> keywords{standard_keywords};
-        keywords.insert(keywords.begin()+1,{"a","b"});
-        keywords.push_back("points");
-        keywords.push_back(NULL);
+        std::array<const char*,standard_keywords.size()+4> keywords;
+        auto keyword_it = keywords.begin();
+        auto standard_keyword_it = standard_keywords.cbegin();
+        *keyword_it++ = *standard_keyword_it++;
+        *keyword_it++ = "a";
+        *keyword_it++ = "b";
+        for(;standard_keyword_it != standard_keywords.cend(); ++keyword_it,++standard_keyword_it){
+            *keyword_it = *standard_keyword_it;
+        }
+        *keyword_it++ = "points";
+        *keyword_it++ = NULL;
 
         if(!PyArg_ParseTupleAndKeywords(routine_args,routine_kwargs,"Odd|OO$pIdI",const_cast<char**>(keywords.data()),
                 &integrand,&x_min,&x_max,
