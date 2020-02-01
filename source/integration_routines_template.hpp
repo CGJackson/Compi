@@ -3,7 +3,7 @@
 
 #include "kumquat.hpp"
 
-#include <array>
+#include <vector>
 #include <complex>
 #include <utility>
 #include <stdexcept>
@@ -13,7 +13,41 @@
 #include "IntegrandFunctionWrapper.hpp"
 #include "utils.hpp"
 
-constexpr std::array<const char*,6> standard_keywords{"f","args", "kwargs", "full_output","max_levels", "tolerance"};
+enum class IntegralRange: short unsigned {infinite, semi_infinite, finite};
+
+// Generates a vector of the standard keywords, appropriate bounds depending
+// on the integration bounds, and any extra required, optional and keyword
+// only arguments, in the correct order to be used in Py_ParseTupleAndKeywords
+// for an integration routine.
+inline std::vector<const char *> generate_keyword_list(IntegralRange bounds, const std::vector<const char*>& required = std::vector<const char*>{}, const std::vector<const char*> optional = std::vector<const char*>{}, const std::vector<const char*> keyword_only = std::vector<const char*>{}){
+    
+    std::vector<const char*> keywords{"f"};
+
+    switch(bounds){
+        case IntegralRange::finite:
+            keywords.push_back("a");
+        case IntegralRange::semi_infinite:
+            keywords.push_back("b");
+        case IntegralRange::infinite:;
+    }
+
+    keywords.insert(keywords.end(),required.begin(),required.end());
+
+    keywords.push_back("args");
+    keywords.push_back("kwargs");
+
+    keywords.insert(keywords.end(),optional.begin(),optional.end());
+
+    keywords.push_back("full_output");
+    keywords.push_back("max_levels");
+    keywords.push_back("tolerance");
+
+    keywords.insert(keywords.end(),keyword_only.begin(),keyword_only.end());
+
+    keywords.push_back(NULL);
+
+    return keywords;
+}
 
 struct RoutineParametersBase{
     PyObject* integrand;

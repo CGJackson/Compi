@@ -1,7 +1,6 @@
 #include "kumquat.hpp"
 
 #include <complex>
-#include <array>
 
 #include <boost/math/quadrature/tanh_sinh.hpp>
 
@@ -17,13 +16,7 @@ struct TanhSinhParameters: public RoutineParametersBase {
     Real x_max;
 
     TanhSinhParameters(PyObject* routine_args, PyObject* routine_kwargs){
-        std::array<const char*, standard_keywords.size()+3> keywords;
-        auto keywords_it = keywords.begin();
-        *keywords_it++ = standard_keywords[0];
-        *keywords_it++ = "a";
-        *keywords_it++ = "b";
-        std::copy(standard_keywords.cbegin()+1, standard_keywords.end(),keywords_it);
-        keywords.back() = NULL;
+        auto keywords = generate_keyword_list(IntegralRange::finite);
 
         if(!PyArg_ParseTupleAndKeywords(routine_args,routine_kwargs,"Odd|OO$pId",const_cast<char**>(keywords.data()),
                 &integrand,&x_min,&x_max,
