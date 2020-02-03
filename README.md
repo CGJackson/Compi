@@ -35,7 +35,7 @@ Performs Gauss-Kronrod adaptive quadrature on a finite interval.
 | Name | Type | Description|
 |---|---|---|
 | result | `complex` | The reuslt of the integration|
-|error   | `float`   | An estemate in the error in the result. Optained as the magnitude difference between the integration using `points` and using `(points-1)/2` points in the integation. |
+|error   | `float`   | An estemate in the error in the result. Calculated as the absolute difference between the last two approximations |
 
 #### Parameters
 | Name | Type | Description|
