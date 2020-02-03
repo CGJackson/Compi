@@ -79,6 +79,7 @@ setup(name='Kumquat',
       ext_modules=[Extension('kumquat',[src+f for f in ('kumquat.c',
                                             'GaussKronrod.cpp',
                                             'tanh_sinh.cpp',
+                                            'sinh_sinh.cpp',
                                             'IntegrandFunctionWrapper.cpp')],
 
                                        include_dirs=[boost_path]
