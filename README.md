@@ -25,9 +25,8 @@ Performs Gauss-Kronrod adaptive quadrature on a finite interval.
 #### Example:
 ```python
 >>> from cmath import exp, pi
-
 >>> import kumquat
-
+>>>
 >>> kumquat.gauss_kronrod(lambda x: exp(1j*x), 0.0, 2*pi)
 ((-2.5692059876656286e-16+0j), 1.1308638867425836e-15)
 ```
@@ -65,12 +64,17 @@ Perform tanh-sinh integration over a finite, infinite or semi-infinite interval.
 
 #### Example
 ```python
->>> from cmath import pi, exp
-
+>>> from cmath import pi, inf, exp
 >>> import kumquat
-
+>>>
 >>> kumquat.tanh_sinh(lambda x: exp(1j*x),0.0,2*pi)
 ((-9.332108564577363e-16+2.027672074384815e-17j), 8.557487711460666e-17)
+>>>
+>>> kumquat.tanh_sinh(lambda x: exp((-1+1j)*x),0,inf)
+((0.5+0.4999999999999999j), 1.001572550818618e-14)
+>>>
+>>> kumquat.tanh_sinh(lambda x: exp((-0.5+0.5j)*x**2),-inf,inf) # should be sqrt( pi*(1+1j) )
+((1.947366887844733+0.8066257758615742j), 5.9746092726847654e-15)
 ```
 #### Returns
 | Name | Type | Description|
