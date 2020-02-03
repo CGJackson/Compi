@@ -73,7 +73,7 @@ Perform tanh-sinh integration over a finite, infinite or semi-infinite interval.
 >>> kumquat.tanh_sinh(lambda x: exp((-1+1j)*x),0,inf)
 ((0.5+0.4999999999999999j), 1.001572550818618e-14)
 >>>
->>> kumquat.tanh_sinh(lambda x: exp((-0.5+0.5j)*x**2),-inf,inf) # should be sqrt( pi*(1+1j) )
+>>> kumquat.tanh_sinh(lambda x: exp((-0.5+0.5j)*x**2),-inf,inf) # sqrt( pi*(1+1j) )
 ((1.947366887844733+0.8066257758615742j), 5.9746092726847654e-15)
 ```
 #### Returns
