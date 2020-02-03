@@ -380,6 +380,41 @@ class TestFiniteIntevalIntegration():
         self.assertGreater(result.real,0.0)
         self.assertGreater(result.imag,0.0)
 
+class TestInfiniteIntegration():
+
+    def test_gaussian_integral(self):
+        '''
+        checks the gaussian itegral
+        '''
+
+        result, *_ = self.routine_to_test(lambda x: cmath.exp(-(0.5+0.5j)*(x**2)))
+        squared_result = result**2 # Squared result used to avoid ambiguity with multivaluedness of complex square root
+        expected_squared_result = 2 * pi * (1+1j) 
+        self.assertAlmostEqual(result.real,expected_squared_result.real,places=self.tolerance)
+        self.assertAlmostEqual(result.imag,expected_squared_result.imag,places=self.tolerance)
+
+    def test_lorenzian_integral(self):
+        '''
+        Checks the integral of a lorenzian with a complex pole vanishes
+        '''
+        result, *_ = self.routine_to_test(lambda x: (x-5j)**-2)
+        self.assertAlmostEqual(result.real,0.0,place=self.tolarance)
+        self.assertAlmostEqual(result.imag,0.0,place=self.tolarance)
+
+    def test_positivity_of_complicated_integral(self):
+        '''
+        Integrates a function with positive real and imaginary parts.
+        Checks that the result of the integral also has positive real and
+        imaginary parts
+        '''
+
+        def complicated_func(x):
+            return cmath.exp(-x**2) + 1j*cmath.exp(-5*cmath.abs(x))
+
+        result, *_ = self.routine_to_test(complicated_func)
+        self.assertGreater(result.real,0.0)
+        self.assertGreater(result.imag,0.0)
+
 
 class TestGaussKronrod(unittest.TestCase,
                        TestIntegrationRoutine,
@@ -427,6 +462,24 @@ class TestTanhSinh(unittest.TestCase,
         TestIntegrationRoutine.setUp(self)
         self.routine_to_test = kumquat.tanh_sinh
         self.default_range = (-1.0,1.0)
+
+    def test_full_output_contains_L1_norm_levels(self):
+        def func(x):
+            return 1j
+
+        _,_,diagnostics = self.routine_to_test(func,*self.default_range,full_output=True)
+
+        self.assertSetEqual({"L1 norm", "levels"}, set(diagnostics.keys()))
+        self.assertIsInstance(diagnostics["L1 norm"], float)
+        self.assertIsInstance(diagnostics["levels"], int)
+
+class TestSinhSinh(unittest.TestCase,
+                  TestInfiniteIntegration,
+                  TestIntegrationRoutine):
+    def setUp(self):
+        TestIntegrationRoutine.setUp(self)
+        self.routine_to_test = kumquat.sinh_sinh
+        self.default_range = ()
 
     def test_full_output_contains_L1_norm_levels(self):
         def func(x):
