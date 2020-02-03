@@ -78,6 +78,7 @@ std::pair<PyObject*, PyObject*> get_abscissa_and_weights(){
     return std::make_pair(abscissa,weights);
 }
 
+template<>
 PyObject* generate_full_output_dict(const GaussKronrodParameters::result_type& result, const GaussKronrodParameters& parameters){
 
     // The boost API returning the abscissa and weights simply spesifies that

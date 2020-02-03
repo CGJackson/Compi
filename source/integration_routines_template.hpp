@@ -1,5 +1,5 @@
-#ifndef INTEGRATION_ROUTINES_TEMPLATE_GUARD
-#define INTEGRATION_ROUTINES_TEMPLATE_GUARD
+#ifndef KUMQUAT_INTEGRATION_ROUTINES_TEMPLATE_GUARD
+#define KUMQUAT_INTEGRATION_ROUTINES_TEMPLATE_GUARD
 
 #include "kumquat.hpp"
 
@@ -133,5 +133,8 @@ PyObject* integration_routine(PyObject* args, PyObject* kwargs){
     }
 
 }
-
+template<typename ExpIntegratorParameterType,typename ExpIntegratorResultType>
+PyObject* generate_full_output_dict(const ExpIntegratorResultType& result,const ExpIntegratorParameterType& parameters){
+    return Py_BuildValue("{sdsI}","L1 norm",result.l1,"levels",result.levels);
+}
 #endif

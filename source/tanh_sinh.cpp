@@ -40,9 +40,6 @@ TanhSinhParameters::result_type run_integration_routine(const kumquat_internal::
     return result;
 }
 
-PyObject* generate_full_output_dict(const TanhSinhParameters::result_type& result,const TanhSinhParameters& parameters){
-    return Py_BuildValue("{sdsI}","L1 norm",result.l1,"levels",result.levels);
-}
 
 extern "C" PyObject* tanh_sinh(PyObject* self, PyObject* args, PyObject* kwargs){
     return integration_routine<TanhSinhParameters>(args,kwargs);
