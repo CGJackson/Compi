@@ -102,7 +102,7 @@ PyObject* integration_routine(PyObject* args, PyObject* kwargs){
 
     // The actual integration routine is run
 
-   typename RoutineParameters::result_type result; 
+    decltype(run_integration_routine(*f,*parameters)) result;
     try{
         result = run_integration_routine(*f,*parameters);
     } catch (const unable_to_call_integration_routine& e){
