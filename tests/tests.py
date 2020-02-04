@@ -22,7 +22,7 @@ class TestIntegrationRoutine():
 
     def test_return_not_None(self):
         def test_function(x):
-            return 1j * cmath.exp(-x**2)
+            return 1j * (x-5j)**-2
 
         result = self.routine_to_test(test_function,*self.default_range)
 
@@ -38,7 +38,7 @@ class TestIntegrationRoutine():
         self.assertIsInstance(result[1],float)
 
     def test_runs_with_lambda_function(self):
-        test_function = lambda x: 1j * cmath.exp(-x**2)
+        test_function = lambda x: 1j * (x-5j)**-2
         
         result = self.routine_to_test(test_function,*self.default_range)
 
@@ -124,19 +124,19 @@ class TestIntegrationRoutine():
     # Test extra args passed correctly
 
     def test_runs_for_integrand_with_1_extra_arg(self):
-        test_function = lambda x, y: 1j * cmath.exp(-x**2)
+        test_function = lambda x, y: 1j * (x-5j)**-2
 
         result = self.routine_to_test(test_function,*self.default_range,('a',))
         self.assertIsNotNone(result)
 
     def test_runs_for_integrand_with_2_extra_args(self):
-        test_function = lambda x, y,z: 1j * cmath.exp(-x**2)
+        test_function = lambda x, y,z: 1j *(x-5j)**-2
 
         result = self.routine_to_test(test_function,*self.default_range,('a',5))
         self.assertIsNotNone(result)
 
     def test_extra_args_change_result(self):
-        test_function = lambda x,y: complex(y) * cmath.exp(-x**2)
+        test_function = lambda x,y: complex(y) *(1.0/(1+abs(0.1*x)))**2 # written this way to ensure no double overflow 
 
         result1,*_ = self.routine_to_test(test_function,*self.default_range,(1j,))
         result2,*_ = self.routine_to_test(test_function,*self.default_range,(2j,))
@@ -145,24 +145,24 @@ class TestIntegrationRoutine():
 
     def test_TypeError_if_extra_args_expected_but_not_given(self):
         def test_func(x,y):
-            return 1j * cmath.exp(-x**2)
+            return 1j * (x-5j)**-2
 
         self.assertRaises(TypeError,self.routine_to_test,test_func,*self.default_range)
 
     def test_TypeError_if_no_extra_args_expected_but_some_given(self):
         def test_func(x):
-            return 1j * cmath.exp(-x**2)
+            return 1j * (x-5j)**-2
 
         self.assertRaises(TypeError,self.routine_to_test,test_func,*self.default_range,(1,2))
         
     def test_TypeError_if_wrong_number_of_extra_args_given(self):
         def test_func(x,y):
-            return 1j * cmath.exp(-x**2)
+            return 1j * (x-5j)**-2
 
         self.assertRaises(TypeError,self.routine_to_test,test_func,*self.default_range,(1,2))
 
     def test_extra_arg_tuple_unchanged(self):
-        test_function = lambda x,y,z : 1j * cmath.exp(-x**2)
+        test_function = lambda x,y,z : 1j * (x-5j)**-2
 
         arg_tuple = ('a', [1,2])
         initial_arg_tuple = copy.deepcopy(arg_tuple)
@@ -172,7 +172,7 @@ class TestIntegrationRoutine():
         self.assertEqual(arg_tuple, initial_arg_tuple)
         
     def test_extra_arg_tuple_reference_count(self):
-        test_function = lambda x,y,z : 1j * cmath.exp(-x**2)
+        test_function = lambda x,y,z : 1j * (x-5j)**-2
 
         arg_tuple = ('a', 'b')
 
@@ -183,7 +183,7 @@ class TestIntegrationRoutine():
         self.assertEqual(arg_tuple_ref_count, sys.getrefcount(arg_tuple))
 
     def test_extra_args_reference_count(self):
-        test_function = lambda x,y,z : 1j * cmath.exp(-x**2)
+        test_function = lambda x,y,z : 1j * (x-5j)**-2
 
         arg1,arg2 = ('a', 0.43243)
 
@@ -198,21 +198,21 @@ class TestIntegrationRoutine():
     # Test Kwargs passed correctly
     def test_runs_for_integrand_with_1_kwarg(self):
         def test_function(x,y='kw'):
-            return 1j * cmath.exp(-x**2)
+            return 1j * (x-5j)**-2
 
         result = self.routine_to_test(test_function,*self.default_range,(),{'y':9})
         self.assertIsNotNone(result)
 
     def test_runs_for_integrand_with_2_kwargs(self):
         def test_function(x,y='kw',z=2):
-            return 1j * cmath.exp(-x**2)
+            return 1j * (x-5j)**-2
 
         result = self.routine_to_test(test_function,*self.default_range,(),{'y':9,'z':'f'})
         self.assertIsNotNone(result)
 
     def test_kwargs_change_result(self):
         def test_function(x,kw=1j): 
-            return complex(kw) * cmath.exp(-x**2)
+            return complex(kw) *(1.0/(1+abs(0.1*x)))**2
         
         result1,*_ = self.routine_to_test(test_function,*self.default_range,())
         result2,*_ = self.routine_to_test(test_function,*self.default_range,(),{'kw':2j})
@@ -221,13 +221,13 @@ class TestIntegrationRoutine():
 
     def test_TypeError_for_unexpected_kwargs(self):
         def test_func(x):
-            return 1j * cmath.exp(-x**2)
+            return 1j * (x-5j)**-2
 
         self.assertRaises(TypeError,self.routine_to_test,test_func,*self.default_range,(),{'kw':'spam'})
 
     def test_kwarg_dict_unchanged(self):
         def test_func(x,kw=4):
-            return 1j * cmath.exp(-x**2)
+            return 1j * (x-5j)**-2
 
         kw_dict = {'kw':5}
         initial_kw_dict = copy.deepcopy(kw_dict)
@@ -238,7 +238,7 @@ class TestIntegrationRoutine():
 
     def test_kwarg_dict_reference_count_unchenged(self):
         def test_func(x,kw=3):
-            return 1j * cmath.exp(-x**2)
+            return 1j * (x-5j)**-2
 
         kw_dict = {'kw':5}
 
@@ -250,7 +250,7 @@ class TestIntegrationRoutine():
 
     def test_kwarg_args_reference_count_unchanged(self):
         def test_func(x,kw=3):
-            return 1j * cmath.exp(-x**2)
+            return 1j * (x-5j)**-2
 
         kw_arg = [2,4]
         kw_dict = {'kw':kw_arg}
@@ -263,7 +263,7 @@ class TestIntegrationRoutine():
 
     def test_kwargs_reference_count_unchanged(self):
         def test_func(x,kw=3):
-            return 1j * cmath.exp(-x**2)
+            return 1j * (x-5j)**-2
         kw_name = 'kw'
         kw_dict = {kw_name:5}
 
@@ -377,10 +377,18 @@ class TestInfiniteIntegration():
         '''
         checks the gaussian itegral
         '''
+        def gaussian(x):
+            '''
+            A gaussian function, written to avoid overflow errors at large arguments
+            '''
+            if x > 0:
+                return cmath.exp(-(0.5+0.5j)*x)**x 
+            else:
+                return cmath.exp((0.5+0.5j)*x)**-x
 
-        result, *_ = self.routine_to_test(lambda x: cmath.exp(-(0.5+0.5j)*(x**2)))
+        result, *_ = self.routine_to_test(gaussian)
         squared_result = result**2 # Squared result used to avoid ambiguity with multivaluedness of complex square root
-        expected_squared_result = 2 * pi * (1+1j) 
+        expected_squared_result = 2 * pi / (1+1j) 
         self.assertAlmostEqual(squared_result.real,expected_squared_result.real,places=self.tolerance)
         self.assertAlmostEqual(squared_result.imag,expected_squared_result.imag,places=self.tolerance)
 
@@ -400,7 +408,7 @@ class TestInfiniteIntegration():
         '''
 
         def complicated_func(x):
-            return cmath.exp(-x**2) + 1j*cmath.exp(-5*cmath.abs(x))
+            return cmath.exp(-abs(x)) + 1j*cmath.exp(-5*abs(x))
 
         result, *_ = self.routine_to_test(complicated_func)
         self.assertGreater(result.real,0.0)
