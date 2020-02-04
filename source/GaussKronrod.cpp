@@ -65,7 +65,7 @@ GaussKronrodParameters::result_type run_integration_routine(const kumquat_intern
 }
 
 template<unsigned points>
-std::pair<PyObject*, PyObject*> get_abscissa_and_weights(){
+std::pair<PyObject*, PyObject*> get_abscissa_and_weights() noexcept{
     auto abscissa = kumquat_internal::py_list_from_real_container(boost::math::quadrature::gauss_kronrod<Real,points>::abscissa());
     if(abscissa == NULL){
         return std::make_pair<PyObject*,PyObject*>(NULL,NULL);
@@ -79,7 +79,7 @@ std::pair<PyObject*, PyObject*> get_abscissa_and_weights(){
 }
 
 template<>
-PyObject* generate_full_output_dict(const GaussKronrodParameters::result_type& result, const GaussKronrodParameters& parameters){
+PyObject* generate_full_output_dict(const GaussKronrodParameters::result_type& result, const GaussKronrodParameters& parameters) noexcept{
 
     // The boost API returning the abscissa and weights simply spesifies that
     // they are returned as a (reference to a) random access container. 

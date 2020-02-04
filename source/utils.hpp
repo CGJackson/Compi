@@ -6,19 +6,19 @@
 
 namespace kumquat_internal {
 
-inline std::complex<Real> complex_from_c_complex(const Py_complex& c){
+inline std::complex<Real> complex_from_c_complex(const Py_complex& c) noexcept{
     return std::complex<Real>(c.real,c.imag);
 }
 
-inline Py_complex c_complex_from_complex(const std::complex<Real> c){
+inline Py_complex c_complex_from_complex(const std::complex<Real> c) noexcept{
     return Py_complex{c.real(),c.imag()};
 }
 
-inline bool convertable_to_py_complex(PyObject* obj){
+inline bool convertable_to_py_complex(PyObject* obj) noexcept{
     return PyComplex_Check(obj) || (PyObject_HasAttrString(obj, "__complex__") && PyCallable_Check(PyObject_GetAttrString(obj,"__complex__")));
 }
 
-inline PyObject* copy_py_tuple(PyObject* tup){
+inline PyObject* copy_py_tuple(PyObject* tup) noexcept{
     if(!PyTuple_Check(tup)){
         PyErr_SetString(PyExc_ValueError, "Object passed to copy_py_tuple was not a tuple");
         return NULL;
@@ -41,7 +41,7 @@ inline PyObject* copy_py_tuple(PyObject* tup){
 }
 
 template<typename RandomAccessContainer> 
-PyObject* py_list_from_real_container(const RandomAccessContainer& arr){
+PyObject* py_list_from_real_container(const RandomAccessContainer& arr) noexcept{
     using obj_vector = std::vector<PyObject*>;
     using ov_size_t = obj_vector::size_type;
 
