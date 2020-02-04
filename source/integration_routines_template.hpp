@@ -19,32 +19,32 @@ enum class IntegralRange: short unsigned {infinite, semi_infinite, finite};
 // on the integration bounds, and any extra required, optional and keyword
 // only arguments, in the correct order to be used in Py_ParseTupleAndKeywords
 // for an integration routine.
-inline std::vector<const char *> generate_keyword_list(IntegralRange bounds, const std::vector<const char*>& required = std::vector<const char*>{}, const std::vector<const char*> optional = std::vector<const char*>{}, const std::vector<const char*> keyword_only = std::vector<const char*>{}){
+inline std::vector<const char *> generate_keyword_list(IntegralRange bounds, const std::vector<const char*>& required = std::vector<const char*>{}, const std::vector<const char*> optional = std::vector<const char*>{}, const std::vector<const char*> keyword_only = std::vector<const char*>{}) noexcept{
     
     std::vector<const char*> keywords{"f"};
 
     switch(bounds){
         case IntegralRange::finite:
-            keywords.push_back("a");
+            keywords.emplace_back("a");
         case IntegralRange::semi_infinite:
-            keywords.push_back("b");
+            keywords.emplace_back("b");
         case IntegralRange::infinite:;
     }
 
     keywords.insert(keywords.end(),required.begin(),required.end());
 
-    keywords.push_back("args");
-    keywords.push_back("kwargs");
+    keywords.emplace_back("args");
+    keywords.emplace_back("kwargs");
 
     keywords.insert(keywords.end(),optional.begin(),optional.end());
 
-    keywords.push_back("full_output");
-    keywords.push_back("max_levels");
-    keywords.push_back("tolerance");
+    keywords.emplace_back("full_output");
+    keywords.emplace_back("max_levels");
+    keywords.emplace_back("tolerance");
 
     keywords.insert(keywords.end(),keyword_only.begin(),keyword_only.end());
 
-    keywords.push_back(NULL);
+    keywords.emplace_back(nullptr);
 
     return keywords;
 }
@@ -134,7 +134,7 @@ PyObject* integration_routine(PyObject* args, PyObject* kwargs){
 
 }
 template<typename ExpIntegratorParameterType,typename ExpIntegratorResultType>
-PyObject* generate_full_output_dict(const ExpIntegratorResultType& result,const ExpIntegratorParameterType& parameters){
+PyObject* generate_full_output_dict(const ExpIntegratorResultType& result,const ExpIntegratorParameterType& parameters) noexcept{
     return Py_BuildValue("{sdsI}","L1 norm",result.l1,"levels",result.levels);
 }
 #endif
