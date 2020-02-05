@@ -284,7 +284,7 @@ class TestIntegrationRoutine():
 
     def test_changing_tolerance_chages_result(self):
         def difficult_function(x):
-            return ((0.501+0.00000001j -x)**(-1.5))*cmath.exp(20j*x)
+            return ((0.501+0.00000001j -x)**(-1.5))*cmath.exp(1j*x)
 
         loose_result,*_ = self.routine_to_test(difficult_function,*self.default_range,tolerance=1.0)
         tight_result,*_ = self.routine_to_test(difficult_function,*self.default_range,tolerance=1e-10)
@@ -307,7 +307,10 @@ class TestIntegrationRoutine():
             '''
             A function that should require many levels to correctly numerically intergrate 
             '''
-            return cmath.exp(-0.25*(x**2) + 8j*x)/(0.501-x)
+            ex = (-0.25*abs(x)+ 1j*x)
+            t1 = cmath.exp(ex)
+            t2 = 1/(0.501-x)
+            return t1*t2 
 
         bad_result,*_ = self.routine_to_test(difficult_function,*self.default_range,max_levels = 0)
         good_result,*_ = self.routine_to_test(difficult_function,*self.default_range,max_levels = 10)
@@ -315,7 +318,7 @@ class TestIntegrationRoutine():
         self.assertNotAlmostEqual(bad_result,good_result, places=self.tolerance)
 
         def easy_function(x):
-            return 1j * cmath.exp(-0.00001*x**2)
+            return 1j * cmath.exp(-0.00001*abs(x))
 
         bad_result,*_ = self.routine_to_test(easy_function,*self.default_range,max_levels = 0)
         good_result,*_ = self.routine_to_test(easy_function,*self.default_range,max_levels = 10)
