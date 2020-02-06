@@ -91,6 +91,9 @@ ENV/
 env.bak/
 venv.bak/
 
+#Environments for old version of python for testing purposes
+TestPy*
+
 # Spyder project settings
 .spyderproject
 .spyproject
