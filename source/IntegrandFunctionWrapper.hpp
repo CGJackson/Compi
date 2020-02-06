@@ -49,7 +49,7 @@ class unable_to_form_arg_tuple: public std::runtime_error{
     using std::runtime_error::runtime_error;
 };
 
-class IntegrandFunctionWrapper {//TODO handle keyword args
+class IntegrandFunctionWrapper {
     private:
         PyObject* callback;
         std::vector<PyObject*> args;
