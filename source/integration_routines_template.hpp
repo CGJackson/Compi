@@ -7,6 +7,7 @@
 #include <complex>
 #include <utility>
 #include <stdexcept>
+#include <regex>
 
 #include <boost/math/tools/precision.hpp>
 
@@ -114,6 +115,24 @@ PyObject* integration_routine(PyObject* args, PyObject* kwargs){
     } catch( const PythonError& e ){
         return NULL;
     } catch( const function_did_not_return_complex& e ){
+        return NULL;
+    } catch( const boost::wrapexcept<std::domain_error>& e){
+        //TODO improve error messages
+        if(std::regex_search(e.what(),std::basic_regex<char>("The function you are trying to integrate does not go to zero at infinity")) ){
+            PyErr_SetString(PyExc_ValueError, "Function to be integrated does not go to 0 at infinity");
+        }
+        else{
+            PyErr_SetString(PyExc_RuntimeError,e.what());
+        }
+        return NULL;
+    } catch( const boost::wrapexcept<std::exception>& e){
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+        return NULL;
+    }catch(const std::exception& e){
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+        return NULL;
+    } catch(...){
+        PyErr_SetString(PyExc_RuntimeError, "An unknown error has occured");
         return NULL;
     }
 
