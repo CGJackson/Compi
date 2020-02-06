@@ -417,6 +417,16 @@ class TestInfiniteIntegration():
         self.assertGreater(result.real,0.0)
         self.assertGreater(result.imag,0.0)
 
+    def test_VauleError_if_integrand_does_not_tend_to_zero(self):
+
+        def does_not_tend_to_zero(x):
+            return 1j
+
+        self.assertRaises(ValueError,self.routine_to_test,does_not_tend_to_zero)
+        self.assertRaises(ValueError,self.routine_to_test,lambda x: cmath.exp(1j*x))
+        self.assertRaises(ValueError,self.routine_to_test,lambda x: 1j*cmath.exp(x))
+    
+
 
 class TestGaussKronrod(unittest.TestCase,
                        TestIntegrationRoutine,
