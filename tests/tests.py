@@ -425,7 +425,43 @@ class TestInfiniteIntegration():
         self.assertRaises(ValueError,self.routine_to_test,does_not_tend_to_zero)
         self.assertRaises(ValueError,self.routine_to_test,lambda x: cmath.exp(1j*x))
     
+class TestSemiInfiniteIntegration():
+    def test_power_law(self):
+        def power_law(x):
+            return 1j*(1.0/(x+1))**2
 
+        result, *_ = self.routine_to_test(power_law,0.0)
+
+        self.assertAlmostEqual(result.real,0.0, places=self.tolerance)
+        self.assertAlmostEqual(result.imag,1.0, places=self.tolerance)
+
+
+    def test_exp(self):
+        result, *_ = self.routine_to_test(lambda x: 1j*cmath.exp(-x),0.0)
+        self.assertAlmostEqual(result.real,0.0,places=self.tolerance)
+        self.assertAlmostEqual(result.imag,1.0,places=self.tolerance)
+
+    def test_positivity_of_complicated_integral(self):
+        '''
+        Integrates a function with positive real and imaginary parts.
+        Checks that the result of the integral also has positive real and
+        imaginary parts
+        '''
+
+        def complicated_func(x):
+            return (x+1)**-2 + 1j*cmath.exp(-5*x)
+
+        result, *_ = self.routine_to_test(complicated_func)
+        self.assertGreater(result.real,0.0)
+        self.assertGreater(result.imag,0.0)
+
+    def test_VauleError_if_integrand_does_not_tend_to_zero(self):
+
+        def does_not_tend_to_zero(x):
+            return 1j
+
+        self.assertRaises(ValueError,self.routine_to_test,does_not_tend_to_zero, *self.default_range)
+        self.assertRaises(ValueError,self.routine_to_test,lambda x: cmath.exp(1j*x), *self.default_range)
 
 class TestGaussKronrod(unittest.TestCase,
                        TestIntegrationRoutine,
@@ -496,6 +532,50 @@ class TestSinhSinh(unittest.TestCase,
         self.assertSetEqual({"L1 norm", "levels"}, set(diagnostics.keys()))
         self.assertIsInstance(diagnostics["L1 norm"], float)
         self.assertIsInstance(diagnostics["levels"], int)
+
+class TestExpSinh(unittest.TestCase,
+                  TestSemiInfiniteIntegration,
+                  TestIntegrationRoutine):
+    def setUp(self):
+        TestIntegrationRoutine.setUp(self)
+        self.routine_to_test = kumquat.exp_sinh
+        self.default_range = (0.0,)
+        self.func = lambda x: cmath.exp(-x)
+
+    def test_full_output_contains_L1_norm_levels(self):
+        _,_,diagnostics = self.routine_to_test(self.func,*self.default_range,full_output=True)
+
+        self.assertSetEqual({"L1 norm", "levels"}, set(diagnostics.keys()))
+        self.assertIsInstance(diagnostics["L1 norm"], float)
+        self.assertIsInstance(diagnostics["levels"], int)
+
+    def test_accept_interval_infinity_keyword(self):
+        self._accept_ketword_test("interval_infinity",+1)
+        self._accept_ketword_test("interval_infinity",-1)
+
+    def test_interval_infinity_changes_result(self):
+        def asymmetric_function(x):
+            return (1.0/(x-5+1j))**2 + (1.0/(x-2j))**3
+
+        result1,*_ = self.routine_to_test(asymmetric_function, *self.default_range)
+        result2,*_ = self.routine_to_test(asymmetric_function, *self.default_range, interval_infinity=-1)
+
+        self.assertNotAlmostEqual(result1.real,result2.real,places=self.tolerance)
+        self.assertNotAlmostEqual(result1.imag,result2.imag,places=self.tolerance)
+
+    def test_interval_infinity_changes_sign_of_odd_intergral(self):
+        '''
+        Check that changing interval infinity is probably doing what we expect by putting in an integral where 
+        the result on the 2 semi-infinite ranges are simply related
+        '''
+        def odd_function(x):
+            return 1j*x*cmath.exp(-abs(x))
+
+        pos_result,*_ = self.routine_to_test(odd_function,0.0,interval_infinity=+1)
+        neg_result,*_ = self.routine_to_test(odd_function,0.0,interval_infinity=-1)
+
+        self.assertAlmostEqual(pos_result.real, -neg_result.real, places=self.tolerance)
+        self.assertAlmostEqual(pos_result.imag, -neg_result.imag, places=self.tolerance)
 
 if __name__ == '__main__':
     unittest.main()
