@@ -108,6 +108,14 @@ Perform sinh-sinh integration over an infinite interval.
 
 Warning: This routine evaluates it's integrand at *very* large values, so care must be taken to avoid floating point overflow errors.
 
+#### Example 
+```python
+>>> import kumquat
+>>>
+>>> kumquat.sinh_sinh(lambda x: (x-0.1j)**-2)
+((3.626244744609267e-16+0j), 1.1624467321517911e-08)
+```
+
 #### Returns
 | Name | Type | Description|
 |---|---|---|
