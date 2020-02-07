@@ -25,7 +25,7 @@ def check_valid_boost_path(path):
       include_regex = re.compile(r'#include <(boost/\S*)>') # matches a c++ include for a boost header file
 
       quad = "boost/math/quadrature/"
-      files_required = {quad+"gauss_kronrod.hpp","boost/math/tools/precision.hpp"}
+      files_required = {quad+"gauss_kronrod.hpp",quad+"exp_sinh.hpp","boost/math/tools/precision.hpp"}
 
       # Recusively checks that a file exists, searches it for boost includes
       # and then checks those files
@@ -80,6 +80,7 @@ setup(name='Kumquat',
                                             'GaussKronrod.cpp',
                                             'tanh_sinh.cpp',
                                             'sinh_sinh.cpp',
+                                            'exp_sinh.cpp',
                                             'IntegrandFunctionWrapper.cpp')],
 
                                        include_dirs=[boost_path]
