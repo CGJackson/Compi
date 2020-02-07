@@ -49,8 +49,9 @@ ExpSinhParameters::result_type run_intgration_routine(const kumquat_internal::In
 
     ExpSinhParameters::result_type result;
 
-    result.result = integrator.integrate(f,lower_bound,upper_bound)
+    result.result = integrator.integrate(f,lower_bound,upper_bound,parameters.tolerance,&(result.err),&(result.l1),&(result.levels));
 
+    return result;
 }
 
 extern "C" PyObject* exp_sinh(PyObject* self, PyObject* args, PyObject* kwargs){
