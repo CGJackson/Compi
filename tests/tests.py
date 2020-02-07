@@ -451,7 +451,7 @@ class TestSemiInfiniteIntegration():
         def complicated_func(x):
             return (x+1)**-2 + 1j*cmath.exp(-5*x)
 
-        result, *_ = self.routine_to_test(complicated_func)
+        result, *_ = self.routine_to_test(complicated_func,*self.default_range)
         self.assertGreater(result.real,0.0)
         self.assertGreater(result.imag,0.0)
 
@@ -551,7 +551,7 @@ class TestExpSinh(unittest.TestCase,
 
     def test_accept_interval_infinity_keyword(self):
         self._accept_ketword_test("interval_infinity",+1)
-        self._accept_ketword_test("interval_infinity",-1)
+        self.assertIsNotNone(self.routine_to_test(lambda x: 1j*cmath.exp(x),*self.default_range,None,None,**{"interval_infinity":-1}))
 
     def test_interval_infinity_changes_result(self):
         def asymmetric_function(x):
