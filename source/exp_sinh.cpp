@@ -34,8 +34,9 @@ struct ExpSinhParameters: public RoutineParametersBase {
     };
 };
 
-ExpSinhParameters::result_type run_intgration_routine(const kumquat_internal::IntegrandFunctionWrapper& f, const ExpSinhParameters& parameters){
+ExpSinhParameters::result_type run_integration_routine(const kumquat_internal::IntegrandFunctionWrapper& f, const ExpSinhParameters& parameters){
     static_assert(std::numeric_limits<Real>::has_infinity, "Real type does not have infinity");
+    using std::complex;
     Real lower_bound, upper_bound;
     if(parameters.positive_axis){
         lower_bound = parameters.interval_end;
@@ -49,7 +50,7 @@ ExpSinhParameters::result_type run_intgration_routine(const kumquat_internal::In
 
     ExpSinhParameters::result_type result;
 
-    result.result = integrator.integrate(f,lower_bound,upper_bound,parameters.tolerance,&(result.err),&(result.l1),&(result.levels));
+    result.result = integrator.integrate(f,lower_bound, upper_bound,parameters.tolerance,&(result.err),&(result.l1),&(result.levels));
 
     return result;
 }
