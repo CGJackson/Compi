@@ -1,6 +1,6 @@
 #include "kumquat.hpp"
 
-#include <complex>
+#include <limits>
 
 #include <boost/math/quadrature/trapezoidal.hpp>
 
@@ -13,7 +13,7 @@ extern "C" {
 struct TrapezoidParamerters: public RoutineParametersBase {
     Real x_min, x_max;
 
-    TrapezoidParamerters(PyObject* routine_args, PyObject* routine_kwargs){
+    TrapezoidParamerters(PyObject* routine_args, PyObject* routine_kwargs):RoutineParametersBase{std::numeric_limits<Real>::epsilon(),12}{
         auto keywords = generate_keyword_list(IntegralRange::finite);
 
 

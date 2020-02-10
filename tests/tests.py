@@ -506,6 +506,7 @@ class TestTrapiziodal(unittest.TestCase,
         self.routine_to_test = kumquat.trapezoidal
         self.default_range = (0.0,1.0)
         self.func = lambda x: 1j
+        self.tolerance = 6
 
     def test_full_output_contains_l1_norm(self):
         _,_,diagnostics = self.routine_to_test(self.func,*self.default_range,full_output=True)        
