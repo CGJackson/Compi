@@ -65,6 +65,9 @@ struct RoutineParametersBase{
         Real l1;
     };
 
+    RoutineParametersBase() = default;
+    explicit RoutineParametersBase(Real tol, unsigned levels):tolerance{tol},max_levels{levels}{}
+
 };
 class could_not_parse_arguments: std::runtime_error{
     using std::runtime_error::runtime_error;

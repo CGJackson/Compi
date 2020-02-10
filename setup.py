@@ -81,6 +81,7 @@ setup(name='Kumquat',
                                             'tanh_sinh.cpp',
                                             'sinh_sinh.cpp',
                                             'exp_sinh.cpp',
+                                            'trapezoid.cpp',
                                             'IntegrandFunctionWrapper.cpp')],
 
                                        include_dirs=[boost_path]
