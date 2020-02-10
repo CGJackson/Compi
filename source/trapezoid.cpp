@@ -10,10 +10,10 @@ extern "C" {
 #include "integration_routines_template.hpp"
 #include "IntegrandFunctionWrapper.hpp"
 
-struct TrapeziodParamerters: public RoutineParametersBase {
+struct TrapezoidParamerters: public RoutineParametersBase {
     Real x_min, x_max;
 
-    TrapeziodParamerters(PyObject* routine_args, PyObject* routine_kwargs){
+    TrapezoidParamerters(PyObject* routine_args, PyObject* routine_kwargs){
         auto keywords = generate_keyword_list(IntegralRange::finite);
 
 
@@ -26,8 +26,8 @@ struct TrapeziodParamerters: public RoutineParametersBase {
     }
 };
 
-TrapeziodParamerters::result_type run_integration_routine(const kumquat_internal::IntegrandFunctionWrapper& f, const TrapeziodParamerters& params){
-    TrapeziodParamerters::result_type result;
+TrapezoidParamerters::result_type run_integration_routine(const kumquat_internal::IntegrandFunctionWrapper& f, const TrapezoidParamerters& params){
+    TrapezoidParamerters::result_type result;
 
     result.result = boost::math::quadrature::trapezoidal(f,params.x_min, params.x_max,params.tolerance,params.max_levels, &(result.err),&(result.l1));
 
@@ -35,10 +35,10 @@ TrapeziodParamerters::result_type run_integration_routine(const kumquat_internal
 }
 
 template<>
-PyObject* generate_full_output_dict(const TrapeziodParamerters::result_type& result,const TrapeziodParamerters& params)noexcept{
+PyObject* generate_full_output_dict(const TrapezoidParamerters::result_type& result,const TrapezoidParamerters& params)noexcept{
     return Py_BuildValue("{sd}", "L1 norm", result.l1);
 }
 
 extern "C" PyObject* trapezoidal(PyObject* self, PyObject* args, PyObject* kwargs){
-    return integration_routine<TrapeziodParamerters>(args,kwargs);
+    return integration_routine<TrapezoidParamerters>(args,kwargs);
 }
