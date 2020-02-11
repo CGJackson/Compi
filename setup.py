@@ -85,5 +85,4 @@ setup(name='Kumquat',
 
                                        include_dirs=[boost_path]
                             )],
-      test_suite='tests.tests'
      )
