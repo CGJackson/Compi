@@ -12,6 +12,13 @@ class TestFiniteIntevalIntegration(TestIntegrationRoutine):
     # we have not tried to find particularly difficult functions
     # for the quadrature routine to compute. 
 
+    def setUp(self):
+        super().setUp()
+        self.default_range = (-1.0,1.0)
+
+    def func(self,x):
+        return 1j
+
     def test_exp_integral(self):
         '''
         tests that the integral of exp(i x) ~ 0 over 1 period
@@ -43,6 +50,13 @@ class TestFiniteIntevalIntegration(TestIntegrationRoutine):
         self.assertGreater(result.imag,0.0)
 
 class TestInfiniteIntegration(TestIntegrationRoutine):
+
+    def setUp(self):
+        super().setUp()
+        self.default_range = ()
+
+    def func(self,x):
+        return (x-5j)**(-2)
 
     def test_gaussian_integral(self):
         '''

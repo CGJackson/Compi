@@ -4,18 +4,10 @@ import kumquat
 
 import known_interval_tests
 
-
 class TestGaussKronrod(known_interval_tests.TestFiniteIntevalIntegration):
     
-    def setUp(self):
-        super().setUp()
-        self.default_range = (0.0,1.0)
-
     def routine_to_test(self,f,*args,**kwargs):
         return kumquat.gauss_kronrod(f,*args,**kwargs)
-
-    def func(self,x):
-        return 1j
 
     def test_accept_ponts_parameter(self):
         self._accept_ketword_test('points',15)
