@@ -21,7 +21,7 @@ enum class IntegralRange: short unsigned {infinite, semi_infinite, finite};
 // only arguments, in the correct order to be used in Py_ParseTupleAndKeywords
 // for an integration routine.
 template<IntegralRange bounds,size_t L=0, size_t M=0, size_t N=0>
-constexpr auto generate_keyword_list(const std::array<const char*, L>& required = {}, const std::array<const char*,M> optional = {}, const std::array<const char*,N> keyword_only = {}){
+constexpr auto generate_keyword_list(const std::array<const char*, L>& required = {}, const std::array<const char*,M> optional = {}, const std::array<const char*,N> keyword_only = {}) noexcept {
 
     std::array<const char *, L+M+N+7+static_cast<size_t>(bounds)> keywords{"f"};
 
@@ -86,6 +86,14 @@ class unable_to_call_integration_routine: std::runtime_error{
     using std::runtime_error::runtime_error;
 };
 
+// general template for running integration routines. handles the overall flow of control and exception handelling. Specialized based on 
+// RoutineParameters class, which stores the various parameters which the routine needs to run. Expects 3 funtions to exist.
+//      a construtor for RoutineParameters, which accepts the python arg tuple and keyword dict and handles parsing those into c type, stored
+//      in the constructed RoutineParameters instance. Throws could_not_parse_arguments exception on failure.
+//      run_integration_routine, which takes an IntegrandFunctionWrapper and a RoutineParameters instance and handles the actual calling of the integration routine
+//      generate_full_output_dict, which takes an object of the type returned by run_integration_routine and an instance od RoutineParameters and 
+//      returns a a python dict, containing the extra information provided if full_output is true
+// The RoutineParametersBase class has all the functionality expected of RoutineParameters, except the constructor mentioned above
 template<typename RoutineParameters>
 PyObject* integration_routine(PyObject* args, PyObject* kwargs){
     using namespace::kumquat_internal;
@@ -164,6 +172,9 @@ PyObject* integration_routine(PyObject* args, PyObject* kwargs){
     }
 
 }
+
+// generate_full_output_dict template for classes that expect the full_output dict to contain only the l1 norm and the number of
+// levels of adaptive quadrature
 template<typename ExpIntegratorParameterType,typename ExpIntegratorResultType>
 PyObject* generate_full_output_dict(const ExpIntegratorResultType& result,const ExpIntegratorParameterType& parameters) noexcept{
     return Py_BuildValue("{sdsI}","L1 norm",result.l1,"levels",result.levels);
