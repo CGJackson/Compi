@@ -5,7 +5,7 @@ Essentially a wrapper for the C++ Boost numerical quadriture package
 
 ## Requirements
 
-Kumquat requires Python 3.7 or later and C++ boost version 1.66.0 or later
+Kumquat requires Python 3.7 or later and C++ boost version 1.66.0 or later. It requires a C++ compiler compatable with the C++17 or later.
 
 ## Installation
 

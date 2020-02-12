@@ -83,6 +83,6 @@ setup(name='Kumquat',
                                             'trapezoid.cpp',
                                             'IntegrandFunctionWrapper.cpp')],
 
-                                       include_dirs=[boost_path]
+                                       include_dirs=[boost_path],extra_compile_args=["-std=c++17"]
                             )],
      )

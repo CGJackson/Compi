@@ -14,7 +14,7 @@ extern "C" {
 struct SinhSinhParameters: public RoutineParametersBase {
 
     SinhSinhParameters(PyObject* routine_args, PyObject* routine_kwargs){
-        auto keywords = generate_keyword_list(IntegralRange::infinite);
+        constexpr auto keywords = generate_keyword_list<IntegralRange::infinite>();
 
         if(!PyArg_ParseTupleAndKeywords(routine_args,routine_kwargs,"O|OO$pId", const_cast<char**>(keywords.data()),
             &integrand,

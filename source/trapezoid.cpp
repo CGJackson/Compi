@@ -14,7 +14,7 @@ struct TrapezoidParamerters: public RoutineParametersBase {
     Real x_min, x_max;
 
     TrapezoidParamerters(PyObject* routine_args, PyObject* routine_kwargs):RoutineParametersBase{std::numeric_limits<Real>::epsilon(),12}{
-        auto keywords = generate_keyword_list(IntegralRange::finite);
+        constexpr auto keywords = generate_keyword_list<IntegralRange::finite>();
 
 
         if(!PyArg_ParseTupleAndKeywords(routine_args,routine_kwargs,"Odd|OO$pId",const_cast<char**>(keywords.data()),

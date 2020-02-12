@@ -3,7 +3,7 @@
 
 #include "kumquat.hpp"
 
-#include <vector>
+#include <array>
 #include <complex>
 #include <utility>
 #include <stdexcept>
@@ -16,36 +16,45 @@
 
 enum class IntegralRange: short unsigned {infinite, semi_infinite, finite};
 
-// Generates a vector of the standard keywords, appropriate bounds depending
+// Generates an array of the standard keywords, appropriate bounds depending
 // on the integration bounds, and any extra required, optional and keyword
 // only arguments, in the correct order to be used in Py_ParseTupleAndKeywords
 // for an integration routine.
-inline std::vector<const char *> generate_keyword_list(IntegralRange bounds, const std::vector<const char*>& required = std::vector<const char*>{}, const std::vector<const char*> optional = std::vector<const char*>{}, const std::vector<const char*> keyword_only = std::vector<const char*>{}) noexcept{
-    
-    std::vector<const char*> keywords{"f"};
+template<IntegralRange bounds,size_t L=0, size_t M=0, size_t N=0>
+constexpr auto generate_keyword_list(const std::array<const char*, L>& required = {}, const std::array<const char*,M> optional = {}, const std::array<const char*,N> keyword_only = {}){
+
+    std::array<const char *, L+M+N+7+static_cast<size_t>(bounds)> keywords{"f"};
+
+    size_t k_idx = 1;
 
     switch(bounds){
         case IntegralRange::finite:
-            keywords.emplace_back("a");
+            keywords[k_idx++] = "a";
         case IntegralRange::semi_infinite:
-            keywords.emplace_back("b");
+            keywords[k_idx++] = "b";
         case IntegralRange::infinite:;
     }
 
-    keywords.insert(keywords.end(),required.begin(),required.end());
+    for(auto kw: required){
+        keywords[k_idx++] = kw;
+    }
 
-    keywords.emplace_back("args");
-    keywords.emplace_back("kwargs");
+    keywords[k_idx++] = "args";
+    keywords[k_idx++] = "kwargs";
 
-    keywords.insert(keywords.end(),optional.begin(),optional.end());
+    for(auto kw: optional){
+        keywords[k_idx++] = kw;
+    }
 
-    keywords.emplace_back("full_output");
-    keywords.emplace_back("max_levels");
-    keywords.emplace_back("tolerance");
+    keywords[k_idx++] = "full_output";
+    keywords[k_idx++] = "max_levels";
+    keywords[k_idx++] = "tolerance";
 
-    keywords.insert(keywords.end(),keyword_only.begin(),keyword_only.end());
+    for(auto kw: keyword_only){
+        keywords[k_idx++] = kw;
+    }
 
-    keywords.emplace_back(nullptr);
+    keywords[k_idx++] = nullptr;
 
     return keywords;
 }
