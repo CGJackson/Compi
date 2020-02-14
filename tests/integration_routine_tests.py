@@ -32,6 +32,14 @@ class BasicFunctionalityTests(IntegrationRoutineTestsBase):
 
         self.assertIsNotNone(result)
 
+    def test_runs_with_function_returning_a_float(self):
+        def test_function(x):
+            return float(abs(self.func(x)))
+
+        result = self.routine_to_test(test_function, *self.default_range)
+
+        self.assertIsNotNone(result)
+
 class ReferenceCountingTests(IntegrationRoutineTestsBase):
 
     def test_integrand_reference_count_does_not_change(self):
