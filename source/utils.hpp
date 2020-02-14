@@ -14,8 +14,13 @@ inline Py_complex c_complex_from_complex(const std::complex<Real> c) noexcept{
     return Py_complex{c.real(),c.imag()};
 }
 
+inline bool has_callable_method(PyObject* obj, const char* name){
+    return PyObject_HasAttrString(obj, name) && PyCallable_Check(PyObject_GetAttrString(obj,name));
+}
+
 inline bool convertable_to_py_complex(PyObject* obj) noexcept{
-    return PyComplex_Check(obj) || (PyObject_HasAttrString(obj, "__complex__") && PyCallable_Check(PyObject_GetAttrString(obj,"__complex__")));
+    return PyComplex_Check(obj) || has_callable_method(obj,"__complex__") 
+            || has_callable_method(obj,"__float__") || has_callable_method(obj,"__index__");
 }
 
 inline PyObject* copy_py_tuple(PyObject* tup) noexcept{
