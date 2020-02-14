@@ -25,7 +25,11 @@ def check_valid_boost_path(path):
       include_regex = re.compile(r'#include <(boost/\S*)>') # matches a c++ include for a boost header file
 
       quad = "boost/math/quadrature/"
-      files_required = {quad+"gauss_kronrod.hpp","boost/math/tools/precision.hpp"}
+      files_required = {quad+"gauss_kronrod.hpp",
+                        quad+"tanh_sinh.hpp",
+                        quad+"sinh_sinh.hpp",
+                        quad+"trapezoidal.hpp",
+                        "boost/math/tools/precision.hpp"}
 
       # Recusively checks that a file exists, searches it for boost includes
       # and then checks those files
@@ -52,22 +56,23 @@ def set_boost_path():
             if check_valid_boost_path(path):
                   return path
       
-      print("Unable to locate C++ boost library headers")
+      print("Unable to locate C++ Boost library headers", end="\n\n")
+      print("C++ Boost can be downloaded from www.boost.org", end="\n\n")
       while True:
-            path = input("Please enter file path to boost library location. Press Enter to exit\n").strip('/')
+            path = input("Please enter file path to Boost library location. Press Enter to exit\n").strip('/')
             if not path:
-                  sys.exit()
+                  raise FileNotFoundError("Unable to locate C++ Boost library headers")
             
             
 
             if check_valid_boost_path(path):
                   return path
             
-            print("The directory path you entered is not a valid path to the boost library")
+            print("The directory path you entered is not a valid path to the Boost library")
             
 
 boost_path = set_boost_path()
-print("Using " + boost_path + " as boost location\n")
+print("Using " + boost_path + " as Boost location\n")
 
 src = 'source/'
 
