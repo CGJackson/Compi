@@ -138,7 +138,7 @@ complex<Real> IntegrandFunctionWrapper::operator()(Real x) const{
     if(!convertable_to_py_complex(py_result)){
         Py_DECREF(py_result);
         throw function_did_not_return_complex("The return value of the integrand function could not be converted to a complex number", 
-                "The function passed to IntegrandFunctionWrapper did not return a value that culd be converted to complex");
+                "The function passed to IntegrandFunctionWrapper did not return a value that could be converted to complex");
     }
     
     complex<Real> cpp_result = complex_from_c_complex(PyComplex_AsCComplex(py_result));

@@ -1,24 +1,12 @@
 import unittest
-import kumquat
 import sys,copy
-import cmath, math
-pi = cmath.pi
+import math,cmath
 
-class TestIntegrationRoutine():
-    '''
-    Tests functionality common to all integration routines 
-    '''
+from base_integration_test import IntegrationRoutineTestsBase
 
-    def setUp(self):
-        def dumby_routine(f,a,b,*args,**kwargs):
-            raise NotImplementedError("A dumby routine has been called in place of a routine to be tested")
-        self.routine_to_test = dumby_routine
-        self.default_range = ()
-        self.positional_args = 0
-        self.func = lambda x: 1j
-        self.tolerance = 7 #number of dp
 
-    # Test basic funcitonality
+
+class BasicFunctionalityTests(IntegrationRoutineTestsBase):
 
     def test_return_not_None(self):
         def test_function(x):
@@ -44,7 +32,15 @@ class TestIntegrationRoutine():
 
         self.assertIsNotNone(result)
 
-    # Test reference counting
+    def test_runs_with_function_returning_a_float(self):
+        def test_function(x):
+            return float(abs(self.func(x)))
+
+        result = self.routine_to_test(test_function, *self.default_range)
+
+        self.assertIsNotNone(result)
+
+class ReferenceCountingTests(IntegrationRoutineTestsBase):
 
     def test_integrand_reference_count_does_not_change(self):
         '''
@@ -67,7 +63,7 @@ class TestIntegrationRoutine():
         for i,initial_ref_count in enumerate(intial_bounds_ref_counts):
             self.assertEqual(initial_ref_count, sys.getrefcount(self.default_range[i]))
 
-    #Tests correctly raising errors
+class ErrorRaisingTests(IntegrationRoutineTestsBase):
 
     def test_function_raising_error(self):
         '''
@@ -121,7 +117,7 @@ class TestIntegrationRoutine():
                           does_not_return_complex,
                           *self.default_range)
 
-    # Test extra args passed correctly
+class ExtraArgTests(IntegrationRoutineTestsBase):
 
     def test_runs_for_integrand_with_1_extra_arg(self):
         test_function = lambda x, y: 1j * (x-5j)**-2
@@ -195,7 +191,7 @@ class TestIntegrationRoutine():
         self.assertEqual(arg1_ref_count, sys.getrefcount(arg1))
         self.assertEqual(arg2_ref_count, sys.getrefcount(arg2))
 
-    # Test Kwargs passed correctly
+class ExtraKwargTests(IntegrationRoutineTestsBase):
     def test_runs_for_integrand_with_1_kwarg(self):
         def test_function(x,y='kw'):
             return 1j * (x-5j)**-2
@@ -273,7 +269,7 @@ class TestIntegrationRoutine():
 
         self.assertEqual(initial_ref_count, sys.getrefcount(kw_name))
 
-    # Test integration routine parameters
+class IntegrationRoutineKeywordTests(IntegrationRoutineTestsBase):
 
     def _accept_ketword_test(self, keyword, val):
         self.assertIsNotNone(self.routine_to_test(self.func,*self.default_range,None,None,**{keyword:val}))
@@ -337,253 +333,13 @@ class TestIntegrationRoutine():
         self.assertIsInstance(result[1],float)
         self.assertIsInstance(result[2],dict)
 
-class TestFiniteIntevalIntegration():
-    
-    # Note the purpose of these tests is not to test the unerlying
-    # Integration library, it is to test the python wrapper. Consequently
-    # we have not tried to find particularly difficult functions
-    # for the quadrature routine to compute. 
-
-    def test_exp_integral(self):
-        '''
-        tests that the integral of exp(i x) ~ 0 over 1 period
-        '''
-        result, *_ = self.routine_to_test(lambda x: cmath.exp(1j*x), 0, 2*pi)
-        self.assertAlmostEqual(result.real,0.0,places=self.tolerance)
-        self.assertAlmostEqual(result.imag,0.0,places=self.tolerance)
-
-    def test_quadratic_integral(self):
-        '''
-        checks that the integal of a simple quadratic function is correct
-        '''
-        result, *_ = self.routine_to_test(lambda x: 3*(x-1j)**2, 0.0,1.0)
-        expected_result = ( (1-1j)**3 ) - ( (-1j)**3 )
-        self.assertAlmostEqual(result.real,expected_result.real,places=self.tolerance)
-        self.assertAlmostEqual(result.imag,expected_result.imag,places=self.tolerance)
-
-    def test_positivity_of_complicated_integral(self):
-        '''
-        Integrates a function with positive real and imaginary parts.
-        Checks that the result of the integral also has positive real and
-        imaginary parts
-        '''
-        def complicated_func(x):
-            return math.exp(x) + 1j* math.exp(x**2)
-
-        result, *_ = self.routine_to_test(complicated_func, 0, 5)
-        self.assertGreater(result.real,0.0)
-        self.assertGreater(result.imag,0.0)
-
-class TestInfiniteIntegration():
-
-    def test_gaussian_integral(self):
-        '''
-        checks the gaussian itegral
-        '''
-        def gaussian(x):
-            '''
-            A gaussian function, written to avoid overflow errors at large arguments
-            '''
-            if x > 0:
-                return cmath.exp(-(0.5+0.5j)*x)**x 
-            else:
-                return cmath.exp((0.5+0.5j)*x)**-x
-
-        result, *_ = self.routine_to_test(gaussian)
-        squared_result = result**2 # Squared result used to avoid ambiguity with multivaluedness of complex square root
-        expected_squared_result = 2 * pi / (1+1j) 
-        self.assertAlmostEqual(squared_result.real,expected_squared_result.real,places=self.tolerance)
-        self.assertAlmostEqual(squared_result.imag,expected_squared_result.imag,places=self.tolerance)
-
-    def test_lorenzian_integral(self):
-        '''
-        Checks the integral of a lorenzian with a complex pole vanishes
-        '''
-        result, *_ = self.routine_to_test(lambda x: (x-5j)**-2)
-        self.assertAlmostEqual(result.real,0.0,places=self.tolerance)
-        self.assertAlmostEqual(result.imag,0.0,places=self.tolerance)
-
-    def test_positivity_of_complicated_integral(self):
-        '''
-        Integrates a function with positive real and imaginary parts.
-        Checks that the result of the integral also has positive real and
-        imaginary parts
-        '''
-
-        def complicated_func(x):
-            return cmath.exp(-abs(x)) + 1j*cmath.exp(-5*abs(x))
-
-        result, *_ = self.routine_to_test(complicated_func)
-        self.assertGreater(result.real,0.0)
-        self.assertGreater(result.imag,0.0)
-
-    def test_VauleError_if_integrand_does_not_tend_to_zero(self):
-
-        def does_not_tend_to_zero(x):
-            return 1j
-
-        self.assertRaises(ValueError,self.routine_to_test,does_not_tend_to_zero)
-        self.assertRaises(ValueError,self.routine_to_test,lambda x: cmath.exp(1j*x))
-    
-class TestSemiInfiniteIntegration():
-    def test_power_law(self):
-        def power_law(x):
-            return 1j*(1.0/(x+1))**2
-
-        result, *_ = self.routine_to_test(power_law,0.0)
-
-        self.assertAlmostEqual(result.real,0.0, places=self.tolerance)
-        self.assertAlmostEqual(result.imag,1.0, places=self.tolerance)
-
-
-    def test_exp(self):
-        result, *_ = self.routine_to_test(lambda x: 1j*cmath.exp(-x),0.0)
-        self.assertAlmostEqual(result.real,0.0,places=self.tolerance)
-        self.assertAlmostEqual(result.imag,1.0,places=self.tolerance)
-
-    def test_positivity_of_complicated_integral(self):
-        '''
-        Integrates a function with positive real and imaginary parts.
-        Checks that the result of the integral also has positive real and
-        imaginary parts
-        '''
-
-        def complicated_func(x):
-            return (x+1)**-2 + 1j*cmath.exp(-5*x)
-
-        result, *_ = self.routine_to_test(complicated_func,*self.default_range)
-        self.assertGreater(result.real,0.0)
-        self.assertGreater(result.imag,0.0)
-
-class TestGaussKronrod(unittest.TestCase,
-                       TestIntegrationRoutine,
-                       TestFiniteIntevalIntegration):
-    
-    def setUp(self):
-        TestIntegrationRoutine.setUp(self)
-        self.routine_to_test = kumquat.gauss_kronrod
-        self.default_range = (0.0,1.0)
-
-
-    def test_accept_ponts_parameter(self):
-        self._accept_ketword_test('points',15)
-
-    def test_invalid_number_of_points_raises_ValueError(self):
-        def func(x):
-            return 1j
-
-        self.assertRaises(ValueError, self.routine_to_test,func,*self.default_range,points=17)
-
-    def test_points_changes_result(self):
-        def difficult_function(x):
-            return (0.501+0.00000001j -x)**(-1.5)
-
-        bad_result,*_= self.routine_to_test(difficult_function,*self.default_range,max_levels=1, points=15)
-        good_result,*_ = self.routine_to_test(difficult_function,*self.default_range,max_levels=1, points=61)
-
-        self.assertNotAlmostEqual(bad_result,good_result,places=self.tolerance)
-
-    def test_full_output_contains_L1_norm_abscissa_and_weights(self):
-        def func(x):
-            return 1j
-
-        _,_,diagnostics = self.routine_to_test(func,*self.default_range,full_output=True)
-
-        self.assertSetEqual({"L1 norm", "abscissa", "weights"}, set(diagnostics.keys()))
-        self.assertIsInstance(diagnostics["L1 norm"], float)
-        self.assertIsInstance(diagnostics["abscissa"][0], float)
-        self.assertIsInstance(diagnostics["weights"][0], float)
-
-class TestTanhSinh(unittest.TestCase,
-                TestIntegrationRoutine,
-                TestFiniteIntevalIntegration):
-    def setUp(self):
-        TestIntegrationRoutine.setUp(self)
-        self.routine_to_test = kumquat.tanh_sinh
-        self.default_range = (-1.0,1.0)
-
-    def test_full_output_contains_L1_norm_levels(self):
-        _,_,diagnostics = self.routine_to_test(self.func,*self.default_range,full_output=True)
-
-        self.assertSetEqual({"L1 norm", "levels"}, set(diagnostics.keys()))
-        self.assertIsInstance(diagnostics["L1 norm"], float)
-        self.assertIsInstance(diagnostics["levels"], int)
-
-class TestSinhSinh(unittest.TestCase,
-                  TestInfiniteIntegration,
-                  TestIntegrationRoutine):
-    def setUp(self):
-        TestIntegrationRoutine.setUp(self)
-        self.routine_to_test = kumquat.sinh_sinh
-        self.default_range = ()
-        self.func = lambda x: (x-5j)**(-2)
-
-    def test_full_output_contains_L1_norm_levels(self):
-        _,_,diagnostics = self.routine_to_test(self.func,*self.default_range,full_output=True)
-
-        self.assertSetEqual({"L1 norm", "levels"}, set(diagnostics.keys()))
-        self.assertIsInstance(diagnostics["L1 norm"], float)
-        self.assertIsInstance(diagnostics["levels"], int)
-
-class TestExpSinh(unittest.TestCase,
-                  TestSemiInfiniteIntegration,
-                  TestIntegrationRoutine):
-    def setUp(self):
-        TestIntegrationRoutine.setUp(self)
-        self.routine_to_test = kumquat.exp_sinh
-        self.default_range = (0.0,)
-        self.func = lambda x: cmath.exp(-x)
-
-    def test_full_output_contains_L1_norm_levels(self):
-        _,_,diagnostics = self.routine_to_test(self.func,*self.default_range,full_output=True)
-
-        self.assertSetEqual({"L1 norm", "levels"}, set(diagnostics.keys()))
-        self.assertIsInstance(diagnostics["L1 norm"], float)
-        self.assertIsInstance(diagnostics["levels"], int)
-
-    def test_accept_interval_infinity_keyword(self):
-        self._accept_ketword_test("interval_infinity",+1)
-        self.assertIsNotNone(self.routine_to_test(lambda x: 1j*cmath.exp(x),*self.default_range,None,None,**{"interval_infinity":-1}))
-
-    def test_interval_infinity_changes_result(self):
-        def asymmetric_function(x):
-            return (1.0/(x-5+1j))**2 + (1.0/(x-2j))**3
-
-        result1,*_ = self.routine_to_test(asymmetric_function, *self.default_range)
-        result2,*_ = self.routine_to_test(asymmetric_function, *self.default_range, interval_infinity=-1)
-
-        self.assertNotAlmostEqual(result1.real,result2.real,places=self.tolerance)
-        self.assertNotAlmostEqual(result1.imag,result2.imag,places=self.tolerance)
-
-    def test_interval_infinity_changes_sign_of_odd_intergral(self):
-        '''
-        Check that changing interval infinity is probably doing what we expect by putting in an integral where 
-        the result on the 2 semi-infinite ranges are simply related
-        '''
-        def odd_function(x):
-            return 1j*x*cmath.exp(-abs(x))
-
-        pos_result,*_ = self.routine_to_test(odd_function,0.0,interval_infinity=+1)
-        neg_result,*_ = self.routine_to_test(odd_function,0.0,interval_infinity=-1)
-
-        self.assertAlmostEqual(pos_result.real, -neg_result.real, places=self.tolerance)
-        self.assertAlmostEqual(pos_result.imag, -neg_result.imag, places=self.tolerance)
-class TestTrapiziodal(unittest.TestCase,
-                      TestFiniteIntevalIntegration,
-                      TestIntegrationRoutine):
-
-    def setUp(self):
-        TestIntegrationRoutine.setUp(self)
-        self.routine_to_test = kumquat.trapezoidal
-        self.default_range = (0.0,1.0)
-        self.func = lambda x: 1j
-        self.tolerance = 6
-
-    def test_full_output_contains_l1_norm(self):
-        _,_,diagnostics = self.routine_to_test(self.func,*self.default_range,full_output=True)        
-
-        self.assertSetEqual({"L1 norm"}, set(diagnostics.keys()))
-        self.assertIsInstance(diagnostics["L1 norm"], float)
-
-if __name__ == '__main__':
-    unittest.main()
+class TestIntegrationRoutine(BasicFunctionalityTests,
+                             ReferenceCountingTests,
+                             ErrorRaisingTests,
+                             ExtraArgTests,
+                             ExtraKwargTests,
+                             IntegrationRoutineKeywordTests):
+    '''
+    Tests functionality common to all integration routines 
+    '''
+    pass

@@ -16,7 +16,7 @@ struct TanhSinhParameters: public RoutineParametersBase {
     Real x_max;
 
     TanhSinhParameters(PyObject* routine_args, PyObject* routine_kwargs){
-        auto keywords = generate_keyword_list(IntegralRange::finite);
+        constexpr auto keywords = generate_keyword_list<IntegralRange::finite>();
 
         if(!PyArg_ParseTupleAndKeywords(routine_args,routine_kwargs,"Odd|OO$pId",const_cast<char**>(keywords.data()),
                 &integrand,&x_min,&x_max,
