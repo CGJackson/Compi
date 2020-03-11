@@ -1,8 +1,9 @@
 #include "kumquat.hpp"
 
-#include <vector>
+#include <array>
 #include <limits>
 
+#include <boost/version.hpp>
 #include <boost/math/quadrature/exp_sinh.hpp>
 
 extern "C" {
@@ -16,7 +17,9 @@ struct ExpSinhParameters: public RoutineParametersBase {
     bool positive_axis;
 
     ExpSinhParameters(PyObject* routine_args,PyObject* routine_kwargs){
-        auto keywords = generate_keyword_list(IntegralRange::semi_infinite,std::vector<const char*>{},std::vector<const char*>{"interval_infinity"});
+        using std::array;
+        constexpr array<const char*,0> dumby {};
+        constexpr auto keywords = generate_keyword_list<IntegralRange::semi_infinite>(dumby,dumby,array<const char*,1>{"interval_infinity"});
 
         float sign = 1.0;
 
@@ -37,21 +40,29 @@ struct ExpSinhParameters: public RoutineParametersBase {
 ExpSinhParameters::result_type run_integration_routine(const kumquat_internal::IntegrandFunctionWrapper& f, const ExpSinhParameters& parameters){
     static_assert(std::numeric_limits<Real>::has_infinity, "Real type does not have infinity");
     using std::complex;
-    Real lower_bound, upper_bound;
-    if(parameters.positive_axis){
-        lower_bound = parameters.interval_end;
-        upper_bound = std::numeric_limits<Real>::infinity();
-    } else{
-        upper_bound = parameters.interval_end;
-        lower_bound = -std::numeric_limits<Real>::infinity();
-    }
-
     boost::math::quadrature::exp_sinh<Real> integrator(parameters.max_levels);
 
     ExpSinhParameters::result_type result;
 
-    result.result = integrator.integrate(f,lower_bound, upper_bound,parameters.tolerance,&(result.err),&(result.l1),&(result.levels));
+    // Work around bug in early versions of boost where exp_sinh.integrate will not compile when used with a complex valued function over a non-native range
+    #if BOOST_VERSION > 999999999 // larger than any value in current boost versioning scheme, as there is no version yet where this bug is fixed... 
+        Real lower_bound, upper_bound;
+        if(parameters.positive_axis){
+            lower_bound = parameters.interval_end;
+            upper_bound = std::numeric_limits<Real>::infinity();
+        }
+        else{
+            upper_bound = parameters.interval_end;
+            lower_bound = -std::numeric_limits<Real>::infinity();
+        }
+        result.result = integrator.integrate(f,lower_bound, upper_bound,parameters.tolerance,&(result.err),&(result.l1),&(result.levels));
+    #else
+        Real sign = parameters.positive_axis ? 1:-1;
+        Real shift = sign*parameters.interval_end;
 
+        auto f_shifted = [&f, shift,sign](Real x){ return f(sign*x + shift);};
+        result.result = integrator.integrate(f_shifted,parameters.tolerance,&(result.err),&(result.l1),&(result.levels));
+    #endif
     return result;
 }
 
