@@ -29,6 +29,7 @@ struct ExpSinhParameters: public RoutineParametersBase {
                 &full_output, &max_levels,&tolerance)){
             throw could_not_parse_arguments("Unable to parse python arguments to C variables");
         }
+        //TODO raise value error if sign == 0
         positive_axis = sign > 0;
     }
 
@@ -57,10 +58,15 @@ ExpSinhParameters::result_type run_integration_routine(const kumquat_internal::I
         }
         result.result = integrator.integrate(f,lower_bound, upper_bound,parameters.tolerance,&(result.err),&(result.l1),&(result.levels));
     #else
-        Real sign = parameters.positive_axis ? 1:-1;
-        Real shift = sign*parameters.interval_end;
+        // maps the function f onto the native range of the exp_sinh integrator (0,oo)
+        auto f_shifted = [
+                            &f, 
+                            sign=(parameters.positive_axis ? static_cast<Real>(1):static_cast<Real>(-1)),
+                            shift=parameters.interval_end
+                         ](Real x){ 
+                             return f(sign*x + shift);
+                         };
 
-        auto f_shifted = [&f, shift,sign](Real x){ return f(sign*x + shift);};
         result.result = integrator.integrate(f_shifted,parameters.tolerance,&(result.err),&(result.l1),&(result.levels));
     #endif
     return result;
