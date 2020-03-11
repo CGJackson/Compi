@@ -23,7 +23,7 @@ static PyMethodDef KumquatMethods[] = {
 };
 
 /* Module docs. Must be a C constant expression, hence the define */
-#define KUMQUAT_DOCS "Provides routine to perform efficient complex valued numeric integration\n\nContains:\n\tgauss_kronrod: Performs Gauss-Kronrod quadrature over a finite interval\n\ttanh_sinh: Performs tanh-sinh quadrature over a finite, semi-infinite or infinite interval\n\tsinh_sinh: Performs sinh-sinh quadrature over an infinite interval\n\texp_sinh: Performs exp-sinh quadrature over a semi-infinite interval"
+#define KUMQUAT_DOCS "Provides routine to perform efficient complex valued numeric integration\n\nContains:\n\ttrapezoidal: Performs trapeziodal quadrature over a finite interval\n\tgauss_kronrod: Performs Gauss-Kronrod quadrature over a finite interval\n\ttanh_sinh: Performs tanh-sinh quadrature over a finite, semi-infinite or infinite interval\n\tsinh_sinh: Performs sinh-sinh quadrature over an infinite interval\n\texp_sinh: Performs exp-sinh quadrature over a semi-infinite interval"
 
 /* Module definition Structure */
 static struct PyModuleDef KumquatModule = {
