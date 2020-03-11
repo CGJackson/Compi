@@ -58,7 +58,7 @@ class TestExpSinh(known_interval_tests.TestSemiInfiniteIntegration):
         self.assertAlmostEqual(pos_result.imag, -neg_result.imag, places=self.tolerance)
 
     def test_ValueError_if_interval_infinity_0(self):
-        self.assertRaises(ValueError,self.routine_to_test,self.default_range,interval_infinity=0)
+        self.assertRaises(ValueError,self.routine_to_test,self.func,*self.default_range,interval_infinity=0)
 
 if __name__ == '__main__':
     unittest.main()
