@@ -111,7 +111,7 @@ class TestSemiInfiniteIntegration(TestIntegrationRoutine):
 
     def setUp(self):
         super().setUp()
-        self.default_range(0.0,)
+        self.default_range = (0.0,)
 
     def func(self,x):
         return cmath.exp((-1+1j) * x)
