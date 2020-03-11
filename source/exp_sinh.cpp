@@ -29,7 +29,11 @@ struct ExpSinhParameters: public RoutineParametersBase {
                 &full_output, &max_levels,&tolerance)){
             throw could_not_parse_arguments("Unable to parse python arguments to C variables");
         }
-        //TODO raise value error if sign == 0
+        
+        if(sign == 0.0){
+            PyErr_SetString(PyExc_ValueError, "interval_infinity must be either a psitive or a negative value. It cannot be 0.");
+            throw could_not_parse_arguments("interval_infinity must be either a positive or a negative value. It cannot be 0.");
+        }
         positive_axis = sign > 0;
     }
 
