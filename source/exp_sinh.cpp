@@ -19,7 +19,7 @@ struct ExpSinhParameters: public RoutineParametersBase {
     ExpSinhParameters(PyObject* routine_args,PyObject* routine_kwargs){
         using std::array;
         constexpr array<const char*,0> dumby {};
-        constexpr auto keywords = generate_keyword_list<IntegralRange::semi_infinite>(dumby,dumby,array<const char*,1>{"interval_infinity"});
+        constexpr auto keywords = generate_keyword_list<IntegralRange::semi_infinite>(dumby,array<const char*,1>{"interval_infinity"});
 
         float sign = 1.0;
 
