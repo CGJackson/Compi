@@ -74,7 +74,7 @@ Performs Gauss-Kronrod adaptive quadrature on a finite interval.
 | Name | Type | Description|
 |---|---|---|
 | result | `complex` | The reuslt of the integration|
-|error   | `float`   | An estemate in the error in the result. Optained as the magnitude difference between the integration using `points` and using `(points-1)/2` points in the integation. |
+| error  | `float`   | An estemate in the error in the result. Optained as the magnitude difference between the integration using `points` and using `(points-1)/2` points in the integation. |
 
 #### Parameters
 | Name | Type | Description|
@@ -119,7 +119,7 @@ Perform tanh-sinh integration over a finite, infinite or semi-infinite interval.
 | Name | Type | Description|
 |---|---|---|
 | result | `complex` | The reuslt of the integration|
-|error   | `float`   | An estemate in the error in the result. Calculated as the absolute difference between the last two approximations |
+| error  | `float`   | An estemate in the error in the result. Calculated as the absolute difference between the last two approximations |
 
 #### Parameters
 | Name | Type | Description|
@@ -159,18 +159,61 @@ Warning: This routine evaluates it's integrand at *very* large values, so care m
 | Name | Type | Description|
 |---|---|---|
 | result | `complex` | The reuslt of the integration|
-|error   | `float`   | An estemate in the error in the result. Calculated as the absolute difference between the last two approximations |
+| error  | `float`   | An estemate in the error in the result. Calculated as the absolute difference between the last two approximations |
 
 #### Parameters
 | Name | Type | Description|
 |---|---|---|
-|`f`   |Callable| Function to be integrated. Must take a point in the integration range as a `float` in its first argument and return a `complex`. Additional arguments can be passed to `f` via the `args` and `kwargs` parameters|
+|`f`   |Callable| Function to be integrated. Must take a point in the integration range as a `float` in its first argument and return a `complex`. Additional arguments can be passed to `f` via the `args` and `kwargs` parameters.|
+
+#### Optional Parameters
+| Name | Type | Default | Description |
+| -----|------|---------|-------------|
+|`args`|    `tuple`| `None`| Additional positional arguments to be passed to `f`. The position in the integration region must still be the first argument of f.|
+|`kwargs`| `dict`| `None` | Additional keyword arguments to be passed to `f`.|
+
+#### Keyword Parameters
+| Name | Type | Default | Description |
+| -----|------|---------|-------------|
+|`full_output`| `bool`| `False`|If true returns a dict containing additional infomation about the integration performed, in addition to the result and error estemate. This dict contains an estimate of the L1 norm of `f` and the number of levels of refinement needed in the adaptive algorithm.|
+|`max_levels`| `int`| `15` |The maximum number of levels of refinement to be used in the adaptive integration routine. Set to `0` for non-adaptive quadrature.|
+|`tolarence`| `float`| square root of machine epsilon |The maximum relative error in the result. Should not be set too close to machine precision.|
+
+### exp_sinh
+
+Perform exp-sinh integration over a semi-infinite interval. 
+
+Warning: This routine evaluates it's integrand at *very* large values, so care must be taken to avoid floating point overflow errors.
+
+#### Example
+```python
+>>> import kumquat
+>>> from cmath import exp
+>>> 
+>>> kumquat.exp_sinh(lambda x: exp((-1+1j)*x),0.0)
+((0.5+0.5j), 9.258652707446339e-10)
+>>> kumquat.exp_sinh(lambda x: exp((1+1j)*x),0.0,interval_infinity=-1)
+((0.5-0.5j), 9.258652707446339e-10)
+```
+
+#### Returns
+| Name | Type | Description|
+|---|---|---|
+| result | `complex` | The reuslt of the integration|
+| error  | `float`   | An estemate in the error in the result. Calculated as the absolute difference between the last two approximations |
+
+#### Parameters
+| Name | Type | Description|
+|---|---|---|
+| `f`  |Callable| Function to be integrated. Must take a point in the integration range as a `float` in its first argument and return a `complex`. Additional arguments can be passed to `f` via the `args` and `kwargs` parameters.|
+| `b`  |`float`| Boundry of the integration region. `exp_sinh` will integrate either from `b` to positive infinity (the default behaviour) or from negative infinty to `b` depending on the sign on `interval_infinty`.|
 
 #### Optional Parameters
 | Name | Type | Default | Description |
 | -----|------|---------|-------------|
 |`args`|    `tuple`| `None`| Additional positional arguments to be passed to `f`. The position in the integration region must still be the first argument of f.|
 |`kwargs`| `dict`| `None` | Additional keyword arguments to be passed to `f`|
+|`interval_infinity`| `float` | `1.0` | Determines if the range of integation runs to positive or negative infinity. If `interval_infinity > 0`, the `exp_sinh` will integrate from `b` to positive infinity. If `interval_infinity < 0` it will integrate from negative infinity to `b`. `ValueError` will be raised if `interval_infinity == 0`.|
 
 #### Keyword Parameters
 | Name | Type | Default | Description |
