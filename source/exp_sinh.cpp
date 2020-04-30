@@ -50,7 +50,7 @@ ExpSinhParameters::result_type run_integration_routine(const kumquat_internal::I
     ExpSinhParameters::result_type result;
 
     // Work around bug in early versions of boost where exp_sinh.integrate will not compile when used with a complex valued function over a non-native range
-    #if BOOST_VERSION > 999999999 // larger than any value in current boost versioning scheme, as there is no version yet where this bug is fixed... 
+    #if BOOST_VERSION >= 107300 // bug fixed in version 1.73.00
         Real lower_bound, upper_bound;
         if(parameters.positive_axis){
             lower_bound = parameters.interval_end;
