@@ -74,7 +74,6 @@ def set_boost_path():
         path = input("Please enter file path to Boost library location. Press Enter to exit\n").strip('/')
         if not path:
             raise FileNotFoundError("Unable to locate C++ Boost library headers")
-            
 
         if check_valid_boost_path(path):
             return path
