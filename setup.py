@@ -1,7 +1,10 @@
 from setuptools import setup,Extension
 import os, sys, re
 
-import readline # makes terminal input nice
+try:
+    import readline # makes terminal input nice
+except ModuleNotFoundError:
+    pass
 
 #############################################################################################
 #
@@ -54,23 +57,29 @@ def check_valid_boost_path(path):
       return True
 
 def set_boost_path():
-      for path in boost_library_search_locations:
-            if check_valid_boost_path(path):
-                  return path
+    while(True):
+        default_search = input("search for c++ boost in default locations? [y/n]")
+        if default_search.lower().strip() == 'y':
+            for path in boost_library_search_locations:
+                if check_valid_boost_path(path):
+                    return path
+            print("Unable to locate C++ Boost library headers", end="\n\n")
+            break
+        if default_search.lower().strip() == 'n':
+            break
+        print("Invalid input")
       
-      print("Unable to locate C++ Boost library headers", end="\n\n")
-      print("C++ Boost can be downloaded from www.boost.org", end="\n\n")
-      while True:
-            path = input("Please enter file path to Boost library location. Press Enter to exit\n").strip('/')
-            if not path:
-                  raise FileNotFoundError("Unable to locate C++ Boost library headers")
-            
+    print("C++ Boost can be downloaded from www.boost.org", end="\n\n")
+    while True:
+        path = input("Please enter file path to Boost library location. Press Enter to exit\n").strip('/')
+        if not path:
+            raise FileNotFoundError("Unable to locate C++ Boost library headers")
             
 
-            if check_valid_boost_path(path):
-                  return path
+        if check_valid_boost_path(path):
+            return path
             
-            print("The directory path you entered is not a valid path to the Boost library")
+        print("The directory path you entered is not a valid path to the Boost library")
             
 
 boost_path = set_boost_path()
