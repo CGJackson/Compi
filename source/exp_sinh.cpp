@@ -1,4 +1,4 @@
-#include "kumquat.hpp"
+#include "compi.hpp"
 
 #include <array>
 #include <limits>
@@ -42,7 +42,7 @@ struct ExpSinhParameters: public RoutineParametersBase {
     };
 };
 
-ExpSinhParameters::result_type run_integration_routine(const kumquat_internal::IntegrandFunctionWrapper& f, const ExpSinhParameters& parameters){
+ExpSinhParameters::result_type run_integration_routine(const compi_internal::IntegrandFunctionWrapper& f, const ExpSinhParameters& parameters){
     static_assert(std::numeric_limits<Real>::has_infinity, "Real type does not have infinity");
     using std::complex;
     boost::math::quadrature::exp_sinh<Real> integrator(parameters.max_levels);

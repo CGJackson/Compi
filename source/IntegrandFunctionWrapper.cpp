@@ -1,4 +1,4 @@
-#include "kumquat.hpp"
+#include "compi.hpp"
 
 #include <complex>
 #include <utility>
@@ -8,7 +8,7 @@
 #include "IntegrandFunctionWrapper.hpp"
 #include "utils.hpp"
 
-namespace kumquat_internal {
+namespace compi_internal {
 using std::complex;
 
 IntegrandFunctionWrapper::IntegrandFunctionWrapper(const IntegrandFunctionWrapper& other)

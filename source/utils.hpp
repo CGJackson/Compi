@@ -1,10 +1,10 @@
-#ifndef KUMQUAT_UTILS_GUARD
-#define KUMQUAT_UTILS_GUARD
-#include "kumquat.hpp"
+#ifndef COMPI_UTILS_GUARD
+#define COMPI_UTILS_GUARD
+#include "compi.hpp"
 #include <complex>
 #include <vector>
 
-namespace kumquat_internal {
+namespace compi_internal {
 
 inline std::complex<Real> complex_from_c_complex(const Py_complex& c) noexcept{
     return std::complex<Real>(c.real,c.imag);

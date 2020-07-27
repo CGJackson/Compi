@@ -1,4 +1,4 @@
-#include "kumquat.hpp"
+#include "compi.hpp"
 
 #include <limits>
 
@@ -26,7 +26,7 @@ struct TrapezoidParamerters: public RoutineParametersBase {
     }
 };
 
-TrapezoidParamerters::result_type run_integration_routine(const kumquat_internal::IntegrandFunctionWrapper& f, const TrapezoidParamerters& params){
+TrapezoidParamerters::result_type run_integration_routine(const compi_internal::IntegrandFunctionWrapper& f, const TrapezoidParamerters& params){
     TrapezoidParamerters::result_type result;
 
     result.result = boost::math::quadrature::trapezoidal(f,params.x_min, params.x_max,params.tolerance,params.max_levels, &(result.err),&(result.l1));

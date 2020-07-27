@@ -1,4 +1,4 @@
-#include "kumquat.hpp"
+#include "compi.hpp"
 
 #include <complex>
 #include <unordered_map>
@@ -39,9 +39,9 @@ struct GaussKronrodParameters: public RoutineParametersBase{
 
 };
 
-GaussKronrodParameters::result_type run_integration_routine(const kumquat_internal::IntegrandFunctionWrapper& f, const GaussKronrodParameters& parameters){
+GaussKronrodParameters::result_type run_integration_routine(const compi_internal::IntegrandFunctionWrapper& f, const GaussKronrodParameters& parameters){
     using std::complex;
-    using namespace kumquat_internal;
+    using namespace compi_internal;
     using boost::math::quadrature::gauss_kronrod;
     using IntegrationRoutine = complex<Real>(*)(IntegrandFunctionWrapper, Real, Real, unsigned, Real, Real*, Real*);
 
@@ -68,11 +68,11 @@ GaussKronrodParameters::result_type run_integration_routine(const kumquat_intern
 
 template<unsigned points>
 std::pair<PyObject*, PyObject*> get_abscissa_and_weights() noexcept{
-    auto abscissa = kumquat_internal::py_list_from_real_container(boost::math::quadrature::gauss_kronrod<Real,points>::abscissa());
+    auto abscissa = compi_internal::py_list_from_real_container(boost::math::quadrature::gauss_kronrod<Real,points>::abscissa());
     if(abscissa == NULL){
         return std::make_pair<PyObject*,PyObject*>(NULL,NULL);
     }
-    auto weights = kumquat_internal::py_list_from_real_container(boost::math::quadrature::gauss_kronrod<Real,points>::weights());
+    auto weights = compi_internal::py_list_from_real_container(boost::math::quadrature::gauss_kronrod<Real,points>::weights());
     if(weights == NULL){
         Py_DECREF(abscissa);
         return std::make_pair<PyObject*,PyObject*>(NULL,NULL);

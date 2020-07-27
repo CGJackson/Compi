@@ -22,7 +22,7 @@ boost_library_search_locations = (
 def check_valid_boost_path(path):
       '''
       Returns True if the path entered gives the location of the boost library, including,
-      at a minimum, all files required by Kumquat
+      at a minimum, all files required by Compi
       '''
 
       include_regex = re.compile(r'#include <(boost/\S*)>') # matches a c++ include for a boost header file
@@ -86,12 +86,12 @@ print("Using " + boost_path + " as Boost location\n")
 
 src = 'source/'
 
-setup(name='Kumquat',
+setup(name='Compi',
       version='0.3',
       author='Conor Jackson',
       author_email='conorgjackson@gmail.com',
-      url='https://github.com/CGJackson/Kumquat',
-      ext_modules=[Extension('kumquat',[src+f for f in ('kumquat.c',
+      url='https://github.com/CGJackson/Compi',
+      ext_modules=[Extension('compi',[src+f for f in ('compi.c',
                                             'GaussKronrod.cpp',
                                             'tanh_sinh.cpp',
                                             'sinh_sinh.cpp',

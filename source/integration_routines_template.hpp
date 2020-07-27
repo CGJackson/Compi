@@ -1,7 +1,7 @@
-#ifndef KUMQUAT_INTEGRATION_ROUTINES_TEMPLATE_GUARD
-#define KUMQUAT_INTEGRATION_ROUTINES_TEMPLATE_GUARD
+#ifndef COMPI_INTEGRATION_ROUTINES_TEMPLATE_GUARD
+#define COMPI_INTEGRATION_ROUTINES_TEMPLATE_GUARD
 
-#include "kumquat.hpp"
+#include "compi.hpp"
 
 #include <array>
 #include <complex>
@@ -96,7 +96,7 @@ class unable_to_call_integration_routine: std::runtime_error{
 // The RoutineParametersBase class has all the functionality expected of RoutineParameters, except the constructor mentioned above
 template<typename RoutineParameters>
 PyObject* integration_routine(PyObject* args, PyObject* kwargs){
-    using namespace::kumquat_internal;
+    using namespace::compi_internal;
     std::unique_ptr<const RoutineParameters> parameters;
 
     // The input Python Objects are parsed into c variables

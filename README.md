@@ -1,20 +1,20 @@
-# Kumquat
+# Compi
 Performs efficient complex valued numerical integration of real varaibles in python. 
 
 Essentially a wrapper for the C++ Boost numerical quadriture package
 
 ## Requirements
 
-Kumquat requires Python 3.7 or later and C++ boost version 1.66.0 or later. It requires a C++ compiler compatable with the C++17 or later.
+Compi requires Python 3.7 or later and C++ boost version 1.66.0 or later. It requires a C++ compiler compatable with the C++17 or later.
 
 ## Installation
 
-To install Kumquat simply clone the repository, navigate to its location and run 
+To install Compi simply clone the repository, navigate to its location and run 
 ```bash
 $ python setup.py
 ```
 
-Kumquat requires C++ boost to be installed. If the setup script is unable to locate the required header files, it will ask for a filepath to their location. The latest version of Boost can be found at https://www.boost.org/.
+Compi requires C++ boost to be installed. If the setup script is unable to locate the required header files, it will ask for a filepath to their location. The latest version of Boost can be found at https://www.boost.org/.
 
 ## Integration Routines
 
@@ -25,9 +25,9 @@ Performs trapezoidal quadrature on a fintie interval
 #### Example
 ```python
 >>> from cmath import exp, pi
->>> import kumquat
+>>> import compi
 >>>
->>> kumquat.trapezoidal(lambda x: exp(1j*x), 0.0, 2*pi)
+>>> compi.trapezoidal(lambda x: exp(1j*x), 0.0, 2*pi)
 ((-2.705769595865211e-16-1.743934249004316e-16j), 1.9112784615498057e-16)
 ```
 
@@ -64,9 +64,9 @@ Performs Gauss-Kronrod adaptive quadrature on a finite interval.
 #### Example:
 ```python
 >>> from cmath import exp, pi
->>> import kumquat
+>>> import compi
 >>>
->>> kumquat.gauss_kronrod(lambda x: exp(1j*x), 0.0, 2*pi)
+>>> compi.gauss_kronrod(lambda x: exp(1j*x), 0.0, 2*pi)
 ((-2.5692059876656286e-16+0j), 1.1308638867425836e-15)
 ```
 
@@ -104,15 +104,15 @@ Perform tanh-sinh integration over a finite, infinite or semi-infinite interval.
 #### Example
 ```python
 >>> from cmath import pi, inf, exp
->>> import kumquat
+>>> import compi
 >>>
->>> kumquat.tanh_sinh(lambda x: exp(1j*x),0.0,2*pi)
+>>> compi.tanh_sinh(lambda x: exp(1j*x),0.0,2*pi)
 ((-9.332108564577363e-16+2.027672074384815e-17j), 8.557487711460666e-17)
 >>>
->>> kumquat.tanh_sinh(lambda x: exp((-1+1j)*x),0,inf)
+>>> compi.tanh_sinh(lambda x: exp((-1+1j)*x),0,inf)
 ((0.5+0.4999999999999999j), 1.001572550818618e-14)
 >>>
->>> kumquat.tanh_sinh(lambda x: exp((-0.5+0.5j)*x**2),-inf,inf) # sqrt( 2*pi*(1+1j) )
+>>> compi.tanh_sinh(lambda x: exp((-0.5+0.5j)*x**2),-inf,inf) # sqrt( 2*pi*(1+1j) )
 ((1.947366887844733+0.8066257758615742j), 5.9746092726847654e-15)
 ```
 #### Returns
@@ -149,9 +149,9 @@ Warning: This routine evaluates it's integrand at *very* large values, so care m
 
 #### Example 
 ```python
->>> import kumquat
+>>> import compi
 >>>
->>> kumquat.sinh_sinh(lambda x: (x-0.1j)**-2)
+>>> compi.sinh_sinh(lambda x: (x-0.1j)**-2)
 ((3.626244744609267e-16+0j), 1.1624467321517911e-08)
 ```
 
@@ -187,12 +187,12 @@ Warning: This routine evaluates it's integrand at *very* large values, so care m
 
 #### Example
 ```python
->>> import kumquat
+>>> import compi
 >>> from cmath import exp
 >>> 
->>> kumquat.exp_sinh(lambda x: exp((-1+1j)*x),0.0)
+>>> compi.exp_sinh(lambda x: exp((-1+1j)*x),0.0)
 ((0.5+0.5j), 9.258652707446339e-10)
->>> kumquat.exp_sinh(lambda x: exp((1+1j)*x),0.0,interval_infinity=-1)
+>>> compi.exp_sinh(lambda x: exp((1+1j)*x),0.0,interval_infinity=-1)
 ((0.5-0.5j), 9.258652707446339e-10)
 ```
 

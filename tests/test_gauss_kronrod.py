@@ -1,13 +1,13 @@
 import unittest
 import cmath,math
-import kumquat
+import compi
 
 import known_interval_tests
 
 class TestGaussKronrod(known_interval_tests.TestFiniteIntevalIntegration):
     
     def routine_to_test(self,f,*args,**kwargs):
-        return kumquat.gauss_kronrod(f,*args,**kwargs)
+        return compi.gauss_kronrod(f,*args,**kwargs)
 
     def test_accept_ponts_parameter(self):
         self._accept_ketword_test('points',15)

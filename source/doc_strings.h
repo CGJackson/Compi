@@ -1,10 +1,10 @@
-#ifndef KUMQUAT_DOC_STRING_HEADER_GUARD
-#define KUMQUAT_DOC_STRING_HEADER_GUARD
+#ifndef COMPI_DOC_STRING_HEADER_GUARD
+#define COMPI_DOC_STRING_HEADER_GUARD
 
 /* Doc strings must be C constant strings. It is therefore simplest to define them as macros */
 
 /* Module docstring */
-#define KUMQUAT_DOCS "Provides routine to perform efficient complex valued numeric integration\n\nContains:\n\ttrapezoidal: Performs trapeziodal quadrature over a finite interval\n\tgauss_kronrod: Performs Gauss-Kronrod quadrature over a finite interval\n\ttanh_sinh: Performs tanh-sinh quadrature over a finite, semi-infinite or infinite interval\n\tsinh_sinh: Performs sinh-sinh quadrature over an infinite interval\n\texp_sinh: Performs exp-sinh quadrature over a semi-infinite interval"
+#define COMPI_DOCS "Provides routine to perform efficient complex valued numeric integration\n\nContains:\n\ttrapezoidal: Performs trapeziodal quadrature over a finite interval\n\tgauss_kronrod: Performs Gauss-Kronrod quadrature over a finite interval\n\ttanh_sinh: Performs tanh-sinh quadrature over a finite, semi-infinite or infinite interval\n\tsinh_sinh: Performs sinh-sinh quadrature over an infinite interval\n\texp_sinh: Performs exp-sinh quadrature over a semi-infinite interval"
 
 
 /* Function docstrings */

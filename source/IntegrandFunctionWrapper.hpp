@@ -1,11 +1,11 @@
-#ifndef KUMQUAT_INTEGRAND_FUNCTION_WRAPPER_GUARD
-#define KUMQUAT_INTEGRAND_FUNCTION_WRAPPER_GUARD
+#ifndef COMPI_INTEGRAND_FUNCTION_WRAPPER_GUARD
+#define COMPI_INTEGRAND_FUNCTION_WRAPPER_GUARD
 
-#include "kumquat.hpp"
+#include "compi.hpp"
 
 #include <vector>
 
-namespace kumquat_internal {
+namespace compi_internal {
 
 // Exceptions to be used in IntegrandFunctionWrapper
 class unable_to_construct_wrapper: public std::runtime_error{

@@ -1,7 +1,7 @@
-#ifndef KUMQUAT_INTEGRATION_ROUTINES_GUARD
-#define KUMQUAT_INTEGRATION_ROUTINES_GUARD
+#ifndef COMPI_INTEGRATION_ROUTINES_GUARD
+#define COMPI_INTEGRATION_ROUTINES_GUARD
 
-#include "kumquat.hpp"
+#include "compi.hpp"
 
 PyObject* gauss_kronrod(PyObject* self, PyObject* args, PyObject* kwargs);
 

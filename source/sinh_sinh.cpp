@@ -1,4 +1,4 @@
-#include "kumquat.hpp"
+#include "compi.hpp"
 
 #include <complex>
 #include <iostream>
@@ -29,7 +29,7 @@ struct SinhSinhParameters: public RoutineParametersBase {
     };
 };
 
-auto run_integration_routine(const kumquat_internal::IntegrandFunctionWrapper& f, const SinhSinhParameters& parameters){
+auto run_integration_routine(const compi_internal::IntegrandFunctionWrapper& f, const SinhSinhParameters& parameters){
     SinhSinhParameters::result_type result;
     
     boost::math::quadrature::sinh_sinh<Real> integrator{static_cast<size_t>(parameters.max_levels)};

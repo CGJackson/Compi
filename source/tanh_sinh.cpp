@@ -1,4 +1,4 @@
-#include "kumquat.hpp"
+#include "compi.hpp"
 
 #include <complex>
 
@@ -31,7 +31,7 @@ struct TanhSinhParameters: public RoutineParametersBase {
     };
 };
 
-TanhSinhParameters::result_type run_integration_routine(const kumquat_internal::IntegrandFunctionWrapper& f,const TanhSinhParameters& parameters){
+TanhSinhParameters::result_type run_integration_routine(const compi_internal::IntegrandFunctionWrapper& f,const TanhSinhParameters& parameters){
     auto integrator = boost::math::quadrature::tanh_sinh<Real>(static_cast<size_t>(parameters.max_levels));
     TanhSinhParameters::result_type result;
 

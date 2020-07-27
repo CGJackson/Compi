@@ -1,9 +1,9 @@
-#include "kumquat.hpp"
+#include "compi.hpp"
 #include "integration_routines.h"
 #include "doc_strings.h"
 
 /* Method Table */
-static PyMethodDef KumquatMethods[] = {
+static PyMethodDef CompiMethods[] = {
     {"trapezoidal", (PyCFunction) trapezoidal, METH_VARARGS | METH_KEYWORDS,
     TRAPEZOIDAL_DOCS},
     {"gauss_kronrod", (PyCFunction) gauss_kronrod, METH_VARARGS | METH_KEYWORDS,
@@ -18,15 +18,15 @@ static PyMethodDef KumquatMethods[] = {
 };
 
 /* Module definition Structure */
-static struct PyModuleDef KumquatModule = {
+static struct PyModuleDef CompiModule = {
     PyModuleDef_HEAD_INIT,
-    "kumquat",/* Module name */
-    KUMQUAT_DOCS, 
+    "compi",/* Module name */
+    COMPI_DOCS, 
     -1, /* Module keeps state at global scope */
-    KumquatMethods
+    CompiMethods
 };
 
 /* Module initialization function */
-PyMODINIT_FUNC PyInit_kumquat(void){
-    return PyModule_Create(&KumquatModule);
+PyMODINIT_FUNC PyInit_compi(void){
+    return PyModule_Create(&CompiModule);
 }

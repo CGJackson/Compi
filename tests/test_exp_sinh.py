@@ -1,12 +1,12 @@
 import unittest
 import cmath
 
-import kumquat
+import compi
 import known_interval_tests
 
 class TestExpSinh(known_interval_tests.TestSemiInfiniteIntegration):
     def routine_to_test(self,f,*args,**kwargs):
-        return kumquat.exp_sinh(f,*args,**kwargs)
+        return compi.exp_sinh(f,*args,**kwargs)
 
     def test_full_output_contains_L1_norm_levels(self):
         _,_,diagnostics = self.routine_to_test(self.func,*self.default_range,full_output=True)
