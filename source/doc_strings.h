@@ -1,4 +1,5 @@
 #ifndef KUMQUAT_DOC_STRING_HEADER_GUARD
+#define KUMQUAT_DOC_STRING_HEADER_GUARD
 
 /* Doc strings must be C constant strings. It is therefore simplest to define them as macros */
 
