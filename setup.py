@@ -91,7 +91,7 @@ def build_run(self):
 cmds['build_ext'].run = build_run
 
 setup(name='Compi',
-      version='0.5',
+      version='1.0',
       author='Conor Jackson',
       author_email='conorgjackson@gmail.com',
       url='https://github.com/CGJackson/Compi',
