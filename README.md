@@ -9,12 +9,18 @@ Compi requires Python 3.7 or later and C++ boost version 1.66.0 or later. It req
 
 ## Installation
 
-To install Compi simply clone the repository, navigate to its location and run 
-```bash
-$ python setup.py
-```
+Compi requires C++ boost to be avalible before it can be installed. The latest version of Boost can be found at https://www.boost.org/.
 
-Compi requires C++ boost to be installed. If the setup script is unable to locate the required header files, it will ask for a filepath to their location. The latest version of Boost can be found at https://www.boost.org/.
+The simplest way to install compi is via pypi using the command
+```bash
+$ pip install compi --install-option="--boost-path=/path/to/boost/headers"
+```
+The instalation will fail if a valid path is not provided
+
+Altenativly, to install compi from source simply clone the repository, navigate to its location and run 
+```bash
+$ python setup.py --boost-path="path/to/boost/headers"
+```
 
 ## Integration Routines
 
