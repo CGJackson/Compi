@@ -51,6 +51,8 @@ class unable_to_form_arg_tuple: public std::runtime_error{
 
 class IntegrandFunctionWrapper {
     private:
+        // IMPORTANT - Class invariant: callback will at all times point to a callable
+        // Python object, i.e. an IntegrandFunctionWrapper will at all times wrap a function
         PyObject* callback;
         std::vector<PyObject*> args;
         PyObject* kwargs = NULL;
@@ -71,7 +73,7 @@ class IntegrandFunctionWrapper {
             return *this;
         }
 
-        // similar to move constructor, the most efficent thing to do here
+        // In order to maintain the class invarient, the most efficent thing to do here
         // simply seems to be to swap elements
         IntegrandFunctionWrapper& operator=(IntegrandFunctionWrapper&& other){
             swap(*this,other);

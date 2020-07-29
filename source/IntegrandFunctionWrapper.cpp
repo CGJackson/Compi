@@ -22,16 +22,19 @@ IntegrandFunctionWrapper::IntegrandFunctionWrapper(const IntegrandFunctionWrappe
             }
         }
 
-        //I can't think of a more efficent way to leave the orignial
-        //in a valid state after moving than simply copying
+        // Move constructor must leave the original object in a valid state
+        // In particular it should maintain the class invarient that callback point to
+        // a callable python object
+        // args and kwargs, however a fair game (so actually calling this callable may
+        // throw a Python TypeError due to the wrong number of args being passed)
 IntegrandFunctionWrapper::IntegrandFunctionWrapper(IntegrandFunctionWrapper&& other)
-            :callback{other.callback}, args{other.args} ,kwargs{other.kwargs}{
+            :callback{other.callback}, args{std::move(other.args)} ,kwargs{other.kwargs}{
             Py_INCREF(other.callback);
-            if(kwargs){
-                Py_INCREF(kwargs);
-            }
-            for(auto a: args){
-                Py_INCREF(a);
+
+            other.kwargs = nullptr;
+
+            for(auto a: other.args){ // technically nessercery std::move leaves other.args in an unknown state.
+                Py_INCREF(a);  // In particular we do not know that it is empty (although it probably is)
             }
         }
 IntegrandFunctionWrapper::IntegrandFunctionWrapper(PyObject * func, 
