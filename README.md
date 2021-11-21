@@ -13,14 +13,15 @@ Compi requires C++ boost to be avalible before it can be installed. The latest v
 
 The simplest way to install compi is via pypi using the command
 ```bash
-$ pip install compi --install-option="--boost-path=/path/to/boost/headers"
+$ pip install compi --install-option="--boost-path=absolute/path/to/boost"
 ```
-The instalation will fail if a valid path is not provided
+The instalation will fail if a valid path is not provided. Note that path must be the absolute path and that the relative path from where the pip command is run will not work.
 
 Altenativly, to install compi from source simply clone the repository, navigate to its location and run 
 ```bash
-$ python setup.py --boost-path="path/to/boost/headers"
+$ python setup.py --boost-path="path/to/boost"
 ```
+In this case the path may be absolute or relative. 
 
 ## Integration Routines
 
